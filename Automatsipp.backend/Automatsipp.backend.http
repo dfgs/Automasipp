@@ -1,0 +1,6 @@
+@Automatsipp.backend_HostAddress = http://localhost:5063
+
+GET {{Automatsipp.backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

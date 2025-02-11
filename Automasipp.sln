@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automasipp.Models", "Automa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automatsipp.backend", "Automatsipp.backend\Automatsipp.backend.csproj", "{697CB5BF-3A2C-48F9-ABCA-88AC38504518}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResultTypeLib", "..\ResultTypeLib\ResultTypeLib\ResultTypeLib.csproj", "{5B5856BF-3012-49AE-8B39-EC50D0385313}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{697CB5BF-3A2C-48F9-ABCA-88AC38504518}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{697CB5BF-3A2C-48F9-ABCA-88AC38504518}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{697CB5BF-3A2C-48F9-ABCA-88AC38504518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B5856BF-3012-49AE-8B39-EC50D0385313}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B5856BF-3012-49AE-8B39-EC50D0385313}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B5856BF-3012-49AE-8B39-EC50D0385313}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B5856BF-3012-49AE-8B39-EC50D0385313}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

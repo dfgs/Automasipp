@@ -121,6 +121,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
             IResult<Scenario> result;
             Scenario? scenario=null;
             SendCommand? send;
+            ReceiveCommand? receive;
 
             logger = Mock.Of<ILogger>();
   
@@ -134,13 +135,18 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             if (scenario == null) return;
             Assert.AreEqual("Basic Sipstone UAC", scenario.Name);
-            Assert.AreEqual(9, scenario.Commands.Count);
+            Assert.AreEqual(10, scenario.Commands.Count);
 
             send = scenario.Commands[0] as SendCommand;
             Assert.IsNotNull(send);
             Assert.AreEqual(500, send.RetransmissionTimer);
             Assert.IsNotNull(send.Message);
             Assert.IsTrue(send.Message.Contains("INVITE sip:[service]@[remote_ip] SIP/2.0"));
+
+            receive = scenario.Commands[1] as ReceiveCommand;
+            Assert.IsNotNull(receive);
+            Assert.AreEqual(100, receive.ResponseCode);
+            Assert.IsTrue(receive.IsOptional);
         }
 
 

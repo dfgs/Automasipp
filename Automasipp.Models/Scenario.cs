@@ -16,6 +16,7 @@ namespace Automasipp.Models
         [XmlElementAttribute("recv", typeof(ReceiveCommand))]
         [XmlElementAttribute("CallLengthRepartition", typeof(CallLengthRepartition))]
         [XmlElementAttribute("ResponseTimeRepartition", typeof(ResponseTimeRepartition))]
+        [XmlElementAttribute("pause", typeof(PauseCommand))]
         public List<Command> Commands
         {
             get;

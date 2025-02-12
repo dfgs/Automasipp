@@ -1,0 +1,25 @@
+﻿<Window x:Class="Automasipp.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Automasipp.Desktop"
+		xmlns:views="clr-namespace:Automasipp.Desktop.Views"
+ 		xmlns:pages="clr-namespace:Automasipp.Desktop.Pages"
+        mc:Ignorable="d"
+        Title="Automasipp" Height="600" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" ResizeMode="CanResizeWithGrip" Loaded="Window_Loaded" >
+
+	<Window.Resources>
+		<DataTemplate DataType="{x:Type pages:ScenariosPage}">
+			<views:ScenariosView/>
+		</DataTemplate>
+	</Window.Resources>
+    <DockPanel>
+		<StatusBar DockPanel.Dock="Bottom">
+			<TextBlock Text="{Binding CurrentPage.Name}"/>
+			<Separator/>
+			<TextBlock Text="{Binding CurrentPage.State, StringFormat='State: {0}'}"/>
+		</StatusBar>
+		<ContentPresenter Content="{Binding CurrentPage}"/>
+	</DockPanel>
+</Window>

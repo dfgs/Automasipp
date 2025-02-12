@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://tempuri.org/sipp" elementFormDefault="qualified" targetNamespace="http://tempuri.org/sipp" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="CallLengthRepartition">
+		<xs:complexType>
+			<xs:attribute name="value" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ResponseTimeRepartition">
+		<xs:complexType>
+			<xs:attribute name="value" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="action">
+		<xs:complexType>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element ref="ereg" />
+				<xs:element ref="log" />
+				<xs:element ref="exec" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ereg">
+		<xs:complexType>
+			<xs:attribute name="assign_to" type="xs:string" use="required" />
+			<xs:attribute default="false" name="check_it">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="header" type="xs:NMTOKEN" />
+			<xs:attribute name="regexp" type="xs:string" use="required" />
+			<xs:attribute default="msg" name="search_in">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="msg" />
+						<xs:enumeration value="hdr" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="log">
+		<xs:complexType>
+			<xs:attribute name="message" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="exec">
+		<xs:complexType>
+			<xs:attribute name="command" type="xs:string" />
+			<xs:attribute default="stop_call" name="int_cmd">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="stop_now" />
+						<xs:enumeration value="stop_gracefully" />
+						<xs:enumeration value="stop_call" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="play_pcap" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pause">
+		<xs:complexType>
+			<xs:attribute name="milliseconds" type="xs:NMTOKEN" />
+			<xs:attribute name="next" type="xs:NMTOKEN" />
+			<xs:attribute name="test" type="xs:NMTOKEN" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="recv">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" ref="action" />
+			</xs:sequence>
+			<xs:attribute name="crlf" type="xs:NMTOKEN" />
+			<xs:attribute name="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="next" type="xs:NMTOKEN" />
+			<xs:attribute name="test" type="xs:NMTOKEN" />
+			<xs:attribute name="response" type="xs:NMTOKEN" />
+			<xs:attribute name="request" type="xs:NMTOKEN" />
+			<xs:attribute name="lost" type="xs:NMTOKEN" />
+			<xs:attribute name="rtd">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="rrs">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="start_rtd">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="scenario">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="CallLengthRepartition" />
+				<xs:element ref="ResponseTimeRepartition" />
+				<xs:element ref="pause" />
+				<xs:element ref="recv" />
+				<xs:element ref="send" />
+				<xs:element ref="sendCmd" />
+				<xs:element ref="recvCmd" />
+				<xs:element ref="label" />
+			</xs:choice>
+			<xs:attribute name="name" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="send">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" ref="action" />
+			</xs:sequence>
+			<xs:attribute name="retrans" type="xs:NMTOKEN" />
+			<xs:attribute name="next" type="xs:NMTOKEN" />
+			<xs:attribute name="test" type="xs:NMTOKEN" />
+			<xs:attribute name="lost" type="xs:NMTOKEN" />
+			<xs:attribute name="rtd">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="start_rtd">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="true" />
+						<xs:enumeration value="false" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sendCmd" type="xs:string" />
+	<xs:element name="label">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="id" type="xs:NMTOKEN" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="recvCmd">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" ref="action" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

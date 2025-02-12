@@ -95,7 +95,31 @@ namespace Automasipp.Backend.UnitTests.Controllers
             Assert.AreEqual("Scenario anyname was not found", koResult.Value);
             Mock.VerifyAll();
         }
+        [TestMethod]
+        public void GetScenarioShouldReturnCode404IfDirectoryIsNotFound()
+        {
+            ILogger<ScenarioController> logger;
+            IScenarioDataSource dataSource;
+            ScenarioController controller;
+            ActionResult<Scenario> result;
+            NotFoundObjectResult? koResult;
 
+            logger = Mock.Of<ILogger<ScenarioController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<IScenarioDataSource>();
+            Mock.Get(dataSource).Setup(m => m.GetScenario(It.IsAny<string>())).Returns(Result.Fail<Scenario>(new DirectoryNotFoundException("error content")));
+
+            controller = new ScenarioController(logger, dataSource);
+
+            result = controller.GetScenario("anyname");
+            koResult = result.Result as NotFoundObjectResult;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Assert.AreEqual("Scenario anyname was not found", koResult.Value);
+            Mock.VerifyAll();
+        }
         [TestMethod]
         public void GetScenarioShouldReturnCode400IfNameIsNotProvided()
         {
@@ -136,7 +160,7 @@ namespace Automasipp.Backend.UnitTests.Controllers
 
             logger = Mock.Of<ILogger<ScenarioController>>();
             dataSource = Mock.Of<IScenarioDataSource>();
-            Mock.Get(dataSource).Setup(m => m.GetScenario(It.IsAny<string>())).Returns(Result.Success(new Scenario()));
+            Mock.Get(dataSource).Setup(m => m.GetScenario(It.IsAny<string>())).Returns(Result.Success(new Scenario() { Name="test" }));
 
             controller = new ScenarioController(logger, dataSource);
 

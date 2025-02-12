@@ -21,4 +21,13 @@
     <ProjectReference Include="..\Automasipp.Backend\Automasipp.Backend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Scenarios\sipp.dtd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scenarios\sippexample.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

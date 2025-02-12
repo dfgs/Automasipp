@@ -53,8 +53,9 @@ namespace Automasipp.backend.Controllers
                 {
                     switch (ex)
                     {
-                        case FileNotFoundException:return this.CreateErrorAction<Scenario>(LogLevel.Warning, $"Scenario {Name} was not found", (m) => this.NotFound(m)); ;
-                        default:return this.CreateErrorAction<Scenario>(LogLevel.Error, "An internal server error occured", (m) => new InternalServerError(m)); ;
+                        case FileNotFoundException: return this.CreateErrorAction<Scenario>(LogLevel.Warning, $"Scenario {Name} was not found", (m) => this.NotFound(m)); ;
+                        case DirectoryNotFoundException: return this.CreateErrorAction<Scenario>(LogLevel.Warning, $"Scenario {Name} was not found", (m) => this.NotFound(m)); ;
+                        default: return this.CreateErrorAction<Scenario>(LogLevel.Error, "An internal server error occured", (m) => new InternalServerError(m)); ;
                     }
                 }
             );

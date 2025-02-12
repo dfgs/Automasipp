@@ -41,7 +41,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
         }
 
         [TestMethod]
-        public void GetScenarioShouldFailAndLogErrorIsFileIsNotFound()
+        public void GetScenarioShouldFailAndLogErrorIfDirectoryIsNotFound()
         {
             ILogger logger;
             IScenarioDataSource dataSource;
@@ -58,6 +58,29 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<DirectoryNotFoundException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+        [TestMethod]
+        public void GetScenarioShouldFailAndLogErrorIfFileIsNotFound()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<Scenario> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new ScenarioDataSource(logger, ".");
+
+            result = dataSource.GetScenario("invalidname");
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
             result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<FileNotFoundException>(ex));
 
             Mock.VerifyAll();
@@ -65,7 +88,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
         }
 
         [TestMethod]
-        public void GetScenarioShouldFailAndLogErrorIsNameIsNull()
+        public void GetScenarioShouldFailAndLogErrorIfNameIsNull()
         {
             ILogger logger;
             IScenarioDataSource dataSource;
@@ -89,6 +112,31 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Mock.VerifyAll();
 
         }
+
+        [TestMethod]
+        public void GetScenarioShouldSucceed()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<Scenario> result;
+            Scenario? scenario=null;
+
+            logger = Mock.Of<ILogger>();
+  
+
+            dataSource = new ScenarioDataSource(logger, @".\Scenarios");
+
+            result = dataSource.GetScenario("sippexample");
+
+            Assert.IsNotNull(result);
+            result.Match((val) => scenario=val, (ex) => Assert.Fail(ex.Message));
+
+            if (scenario == null) return;
+            Assert.AreEqual("Basic Sipstone UAC", scenario.Name);
+            
+  
+        }
+
 
     }
 }

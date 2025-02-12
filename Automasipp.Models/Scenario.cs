@@ -2,9 +2,15 @@
 
 namespace Automasipp.Models
 {
-    [XmlRoot("scenario")]
+    [Serializable, XmlRoot("scenario")]
     public class Scenario
     {
-        public int Id { get; set; }
+        [XmlAttribute(AttributeName ="name")]
+        public required string Name
+        {
+            get;
+            set;
+        }
     }
+
 }

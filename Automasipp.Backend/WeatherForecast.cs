@@ -1,4 +1,4 @@
-namespace Automatsipp.backend
+namespace Automasipp.backend
 {
     public class WeatherForecast
     {

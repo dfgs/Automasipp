@@ -1,6 +1,6 @@
 ﻿using ResultTypeLib;
 
-namespace Automatsipp.backend.DataSources
+namespace Automasipp.backend.DataSources
 {
     public interface IDataSource
     {

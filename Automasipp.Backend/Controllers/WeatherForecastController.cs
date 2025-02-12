@@ -1,7 +1,7 @@
 using Automasipp.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Automatsipp.backend.Controllers
+namespace Automasipp.backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]

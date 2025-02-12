@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ResultTypeLib;
 
-namespace Automatsipp.backend.Controllers
+namespace Automasipp.backend.Controllers
 {
     public static class ControllerResultExtension
     {

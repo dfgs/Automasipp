@@ -22,6 +22,8 @@ namespace Automasipp.backend.DataSources
 
         public IResult<Scenario> GetScenario(string Name)
         {
+            if (Name == null) return Result.Fail<Scenario>(new ArgumentNullException(nameof(Name))) ;
+
             Log(LogLevel.Information, $"Load scenario {Name} in folder {scenariosFolder}");
             return Result.Fail<Scenario>(new FileNotFoundException());
         }

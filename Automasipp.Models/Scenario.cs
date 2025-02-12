@@ -11,6 +11,22 @@ namespace Automasipp.Models
             get;
             set;
         }
+
+        [XmlElementAttribute("send", typeof(SendCommand))]
+        [XmlElementAttribute("recv", typeof(ReceiveCommand))]
+        [XmlElementAttribute("CallLengthRepartition", typeof(CallLengthRepartition))]
+        [XmlElementAttribute("ResponseTimeRepartition", typeof(ResponseTimeRepartition))]
+        public List<Command> Commands
+        {
+            get;
+            set;
+        }
+
+        public Scenario()
+        {
+            this.Commands = new List<Command>();
+        }
+
     }
 
 }

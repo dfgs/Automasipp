@@ -41,6 +41,26 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Mock.VerifyAll();
 
         }
+        [TestMethod]
+        public void GetScenarioNamesShouldSuccess()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<string[]> result;
+
+
+            logger = Mock.Of<ILogger>();
+
+            dataSource = new ScenarioDataSource(logger, @".\Scenarios");
+
+            result = dataSource.GetScenarioNames();
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Succeeded());
+            result.Match((val) => Assert.AreEqual(1,val.Length) , (ex) => Assert.Fail());
+
+
+        }
         #endregion
 
         #region GetScenario

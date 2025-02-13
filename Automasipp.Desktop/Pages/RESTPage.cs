@@ -30,7 +30,22 @@ namespace Automasipp.Desktop.Pages
 
         }
 
-       
+        protected async Task<T> PutAsync<T>(string Resource,object Content)
+        {
+            RestClient? client = PageManager?.GetPage<ConnectionPage>()?.Client;
+            if (client == null) throw new InvalidOperationException("Cannot get REST client");
+            if (Content==null) throw new ArgumentNullException(nameof(Content));
+
+            RestRequest request = new RestRequest(Resource, Method.Put);
+            request.RequestFormat = DataFormat.Xml;
+            request.AddBody(Content);
+
+            T? response = await client.PutAsync<T>(request);
+            if (response == null) throw new InvalidOperationException("Result is null");
+            return response;
+
+        }
+
 
     }
 }

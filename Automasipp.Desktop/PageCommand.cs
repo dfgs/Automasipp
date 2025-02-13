@@ -15,11 +15,14 @@ namespace Automasipp.Desktop
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        private Func<object?,bool> canExecuteHandler;
-        private Action<object?> executeHandler;
+        private IPage page;
 
-        public PageCommand( Func<object?,bool> CanExecuteHandler, Action<object?> ExecuteHandler )
+        private Func<object?,bool> canExecuteHandler;
+        private Func<Task> executeHandler;
+
+        public PageCommand(IPage Page, Func<object?,bool> CanExecuteHandler,Func<Task> ExecuteHandler )
         {
+            this.page = Page;
             this.canExecuteHandler= CanExecuteHandler;
             this.executeHandler= ExecuteHandler;
         }
@@ -30,9 +33,9 @@ namespace Automasipp.Desktop
             return canExecuteHandler(parameter);
         }
 
-        public void Execute(object? parameter)
+        public async void Execute(object? parameter)
         {
-            executeHandler(parameter);
+            await page.RunAsync(executeHandler());
         }
 
 

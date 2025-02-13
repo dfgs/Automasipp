@@ -32,7 +32,7 @@ namespace Automasipp.backend.DataSources
                     XmlSerializer serialiser = new XmlSerializer(typeof(Scenario));
                     Scenario? scenario=serialiser.Deserialize(reader) as Scenario;
                     if (scenario != null) return scenario;
-                    throw new InvalidOperationException("Failed to deserialize scenarion object");
+                    throw new InvalidOperationException("Failed to deserialize scenario object");
                 }
             }
             );
@@ -41,7 +41,7 @@ namespace Automasipp.backend.DataSources
         {
             return Try(() =>
             {
-                using (FileStream stream = new FileStream(FileName, FileMode.Open))
+                using (FileStream stream = new FileStream(FileName,  FileMode.Truncate))
                 {
                     XmlTextWriter writer = new XmlTextWriter(stream,Encoding.Default) ;
                     XmlSerializer serialiser = new XmlSerializer(typeof(Scenario));

@@ -66,7 +66,7 @@ namespace Automasipp.backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<bool> PutScenario(string Name,Scenario Scenario)
+        public ActionResult<bool> PutScenario(string Name, [FromBody] Scenario Scenario)
         {
             if (Name == null) return this.CreateErrorAction<bool>(LogLevel.Error, "Scenario name must be provided", (m) => this.BadRequest(m));
             if (Scenario == null) return this.CreateErrorAction<bool>(LogLevel.Error, "Scenario content must be provided", (m) => this.BadRequest(m));

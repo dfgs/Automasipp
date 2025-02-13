@@ -8,12 +8,13 @@ namespace Automasipp.Desktop
 {
     public interface IPageManager
     {
-        IPage CurrentPage
+        IPage? CurrentPage
         {
             get;
         }
 
         Task OpenPageAsync(IPage Page);
+        Task ClosePageAsync();
 
 
         T? GetPage<T>() where T:IPage;

@@ -26,6 +26,10 @@ namespace Automasipp.Desktop
         }
 
         Task<IResult<bool>> LoadAsync();
+        Task<IResult<bool>> CloseAsync();
+        Task<IResult<T>> RunAsync<T>(Task<T> Func);
+        Task<IResult<bool>> RunAsync(Task Action);
+
 
 
 

@@ -20,13 +20,13 @@ namespace Automasipp.Desktop.ViewModels
 
         private IPageManager pageManager;
 
-        public ScenarioLink(IPageManager PageManager)
+        public ScenarioLink(IPageManager PageManager,IPage Page)
         {
-            OpenCommand = new PageCommand((_) => true, Open);
+            OpenCommand = new PageCommand(Page,(_) => true, () => OpenAsync());
             this.pageManager = PageManager; 
         }
 
-        private async void Open(object? Parameter)
+        private async Task OpenAsync()
         {
             await pageManager.OpenPageAsync(new ScenarioPage(ScenarioName));
 

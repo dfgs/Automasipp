@@ -34,7 +34,7 @@ namespace Automasipp.Desktop.Pages
 
             //await Task.Delay(10000);
             string[] response = await GetAsync<string[]>("Scenario/names");
-            Items = new List<ScenarioLink>(response.Select(item=> new ScenarioLink(PageManager) { ScenarioName=item}));
+            Items = new List<ScenarioLink>(response.Select(item=> new ScenarioLink(PageManager,this) { ScenarioName=item}));
         }
 
        

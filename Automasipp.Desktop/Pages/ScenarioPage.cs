@@ -27,7 +27,12 @@ namespace Automasipp.Desktop.Pages
             set { SetValue(SaveCommandProperty, value); }
         }
 
-
+        public static readonly DependencyProperty CloseCommandProperty = DependencyProperty.Register("CloseCommand", typeof(PageCommand), typeof(ScenarioPage), new PropertyMetadata(null));
+        public PageCommand CloseCommand
+        {
+            get { return (PageCommand)GetValue(CloseCommandProperty); }
+            set { SetValue(CloseCommandProperty, value); }
+        }
 
 
         private string scenarioName;
@@ -38,7 +43,8 @@ namespace Automasipp.Desktop.Pages
         {
             this.scenarioName = ScenarioName;
 
-            this.SaveCommand = new PageCommand((_) => true, SaveCommandExecuted);
+            this.SaveCommand = new PageCommand(this, (_) => true, () => SaveCommandExecutedAsync());
+            this.CloseCommand = new PageCommand(this, (_) => true, () => CloseCommandExecutedAsync());
         }
 
 
@@ -49,9 +55,16 @@ namespace Automasipp.Desktop.Pages
             this.Scenario=response;
                         
         }
-        private async void SaveCommandExecuted(object? parameter)
+        private async Task SaveCommandExecutedAsync()
         {
+            await  PutAsync<bool>($"Scenario/{scenarioName}", Scenario);
+            await Task.Delay(1000);
+        }
 
+        private async Task CloseCommandExecutedAsync()
+        {
+            if (PageManager == null) return;
+            await PageManager.ClosePageAsync();
         }
 
 

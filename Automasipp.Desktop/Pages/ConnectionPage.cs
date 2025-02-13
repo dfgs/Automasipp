@@ -52,7 +52,7 @@ namespace Automasipp.Desktop.Pages
 
         public ConnectionPage():base()
         {          
-            ConnectCommand=new PageCommand((_)=>true,ConnectCommandExecuted);
+            ConnectCommand=new PageCommand(this,(_)=>true,() => ConnectCommandExecutedAsync());
         }
 
         protected override async Task OnLoadAsync()
@@ -60,7 +60,7 @@ namespace Automasipp.Desktop.Pages
             await Task.Yield();
         }
 
-        public async void ConnectCommandExecuted(object? Parameter)
+        private async Task ConnectCommandExecutedAsync()
         {
             if (PageManager==null) return;
 

@@ -26,7 +26,7 @@ namespace Automasipp.backend.DataSources
             }
             catch (Exception ex)
             {
-                Log(LogLevel.Error, "Operation failure", ex);
+                Log(LogLevel.Error, $"Operation failure ({ex.Message})", ex);
                 return Result.Fail<T>(ex);
             }
 

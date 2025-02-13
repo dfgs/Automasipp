@@ -34,6 +34,9 @@
 			<TextBlock Text="Commands:" FontWeight="Bold"/>
 			<ListBox Margin="5" ItemsSource="{Binding Commands}" Height="150"/>
 		</StackPanel>
-		<Button Content="Save" Width="150" Command="{Binding SaveCommand}"/>
+		<UniformGrid Columns="2" >
+			<Button Content="Save" Width="150" Command="{Binding SaveCommand}"/>
+			<Button Content="Close" Width="150" Command="{Binding CloseCommand}"/>
+		</UniformGrid>
 	</StackPanel>
 </UserControl>

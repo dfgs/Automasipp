@@ -58,21 +58,46 @@ namespace Automasipp.Desktop
 
         public async Task<IResult<bool>> LoadAsync()
         {
+            return await RunAsync(OnLoadAsync());
+        }
+
+        public virtual async Task<IResult<bool>> CloseAsync()
+        {
+            return await Task.FromResult(Result.Success(true));
+        }
+        public async Task<IResult<T>> RunAsync<T>(Task<T> Func)
+        {
             State = PageState.Loading;
             try
             {
-                await OnLoadAsync();
+                T val=await Func;
+                State = PageState.Loaded;
+                return Result.Success<T>(val);
+            }
+            catch (Exception ex)
+            {
+                State = PageState.Error;
+                ErrorMessage = ex.Message;
+                return Result.Fail<T>(ex);
+            }
+        }
+        public async Task<IResult<bool>> RunAsync(Task Action)
+        {
+            State = PageState.Loading;
+            try
+            {
+                await Action;
                 State = PageState.Loaded;
                 return Result.Success<bool>(true);
             }
             catch (Exception ex)
             {
                 State = PageState.Error;
-                ErrorMessage=ex.Message;
+                ErrorMessage = ex.Message;
                 return Result.Fail<bool>(ex);
             }
-            
         }
+
         public void Dispose()
         {
             OnDispose();

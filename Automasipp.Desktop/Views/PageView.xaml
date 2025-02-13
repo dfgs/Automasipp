@@ -16,6 +16,9 @@
 		<DataTemplate DataType="{x:Type pages:ScenariosPage}">
 			<views:ScenariosView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type pages:ScenarioPage}">
+			<views:ScenarioView/>
+		</DataTemplate>
 	</UserControl.Resources>
 	<UserControl.Style>
 		<Style TargetType="{x:Type UserControl}">

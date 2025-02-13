@@ -14,7 +14,9 @@
 				<GridViewColumn Header="Actions" Width="200">
 					<GridViewColumn.CellTemplate>
 						<DataTemplate>
-							<Button Command="{Binding OpenCommand}" Content="o"/>
+							<Button Command="{Binding OpenCommand}" >
+								<Image Stretch="None" Source="/Automasipp.Desktop;component/Images/pencil.png"/>
+							</Button>
 						</DataTemplate>
                     </GridViewColumn.CellTemplate>
                 </GridViewColumn>

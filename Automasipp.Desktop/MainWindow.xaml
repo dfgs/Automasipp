@@ -7,7 +7,7 @@
 		xmlns:views="clr-namespace:Automasipp.Desktop.Views"
  		xmlns:pages="clr-namespace:Automasipp.Desktop.Pages"
         mc:Ignorable="d"
-        Title="Automasipp" Height="600" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" ResizeMode="CanResizeWithGrip" Loaded="Window_Loaded" >
+        Title="Automasipp" Height="600" Width="800" WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip" Loaded="Window_Loaded" >
 
 	
     <DockPanel>

@@ -7,5 +7,6 @@ namespace Automasipp.backend.DataSources
     {
         IResult<string[]> GetScenarioNames();
         IResult<Scenario> GetScenario(string Name);
+        IResult<bool> PutScenario(string Name,Scenario Scenario);
     }
 }

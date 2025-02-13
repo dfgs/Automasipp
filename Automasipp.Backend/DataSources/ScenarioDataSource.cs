@@ -1,5 +1,6 @@
 ﻿using Automasipp.Models;
 using ResultTypeLib;
+using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -36,6 +37,21 @@ namespace Automasipp.backend.DataSources
             }
             );
         }
+        private IResult<bool> SaveScenario(string FileName,Scenario Scenario)
+        {
+            return Try(() =>
+            {
+                using (FileStream stream = new FileStream(FileName, FileMode.Open))
+                {
+                    XmlTextWriter writer = new XmlTextWriter(stream,Encoding.Default) ;
+                    XmlSerializer serialiser = new XmlSerializer(typeof(Scenario));
+                    serialiser.Serialize(writer, Scenario);
+                    return true;
+                }
+            }
+            );
+        }
+
 
         public IResult<Scenario> GetScenario(string Name)
         {
@@ -45,7 +61,15 @@ namespace Automasipp.backend.DataSources
 
             return LoadScenario(Path.Combine(scenariosFolder, $"{Name}.xml")).Select((s)=>s,(ex)=>ex.InnerException??ex);
         }
+        public IResult<bool> PutScenario(string Name,Scenario Scenario)
+        {
+            if (Name == null) return Result.Fail<bool>(new ArgumentNullException(nameof(Name)));
+            if (Scenario == null) return Result.Fail<bool>(new ArgumentNullException(nameof(Scenario)));
 
+            Log(LogLevel.Information, $"Save scenario {Name} in folder {scenariosFolder}");
+
+            return SaveScenario(Path.Combine(scenariosFolder, $"{Name}.xml"),Scenario).Select((s) => s, (ex) => ex.InnerException ?? ex);
+        }
 
 
     }

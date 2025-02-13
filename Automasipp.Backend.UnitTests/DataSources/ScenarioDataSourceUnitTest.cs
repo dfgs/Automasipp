@@ -16,6 +16,8 @@ namespace Automasipp.Backend.UnitTests.DataSources
     [TestClass]
     public class ScenarioDataSourceUnitTest
     {
+
+        #region GetScenarioNames
         [TestMethod]
         public void GetScenarioNamesShouldFailAndLogErrorIfSourceFolderIsInvalid()
         {
@@ -39,6 +41,9 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Mock.VerifyAll();
 
         }
+        #endregion
+
+        #region GetScenario
 
         [TestMethod]
         public void GetScenarioShouldFailAndLogErrorIfDirectoryIsNotFound()
@@ -148,7 +153,163 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Assert.AreEqual(100, receive.ResponseCode);
             Assert.IsTrue(receive.IsOptional);
         }
+        #endregion
 
+        #region PutScenario
+
+        [TestMethod]
+        public void PutScenarioShouldFailAndLogErrorIfDirectoryIsNotFound()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new ScenarioDataSource(logger, "invalidfolder");
+
+            result = dataSource.PutScenario("invalidname",new Scenario() { Name="testscenario" });
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<DirectoryNotFoundException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+        [TestMethod]
+        public void PutScenarioShouldFailAndLogErrorIfFileIsNotFound()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new ScenarioDataSource(logger, ".");
+
+            result = dataSource.PutScenario("invalidname",new Scenario() { Name = "testscenario" });
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<FileNotFoundException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+
+        [TestMethod]
+        public void PutScenarioShouldFailAndLogErrorIfNameIsNull()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new ScenarioDataSource(logger, "invalidfolder");
+
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            result = dataSource.PutScenario(null, new Scenario() { Name = "testscenario" });
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<ArgumentNullException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+        [TestMethod]
+        public void PutScenarioShouldFailAndLogErrorIfContentIsNull()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new ScenarioDataSource(logger, "invalidfolder");
+
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            result = dataSource.PutScenario("filename", null);
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<ArgumentNullException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+
+        [TestMethod]
+        public void PutScenarioShouldFailAndLogErrorIfFileDoesntExists()
+        {
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<bool> result;
+            Scenario scenario;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new ScenarioDataSource(logger, @".\Scenarios");
+
+            scenario = new Scenario() { Name = "Test" };
+            result = dataSource.PutScenario("filename", scenario);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<FileNotFoundException>(ex));
+            Assert.IsFalse(File.Exists(@".\Scenarios\filename.xml"));
+            Mock.VerifyAll();
+
+        }
+
+        [TestMethod]
+        public void PutScenarioShouldSucceed()
+        {
+            string fileName = @".\Scenarios\TestPut.xml";
+            ILogger logger;
+            IScenarioDataSource dataSource;
+            IResult<bool> result;
+            Scenario scenario ;
+
+            logger = Mock.Of<ILogger>();
+
+            using (File.Create(fileName)) { };
+            
+            Assert.AreEqual(0, new FileInfo(fileName).Length);
+
+            dataSource = new ScenarioDataSource(logger, @".\Scenarios");
+
+            scenario =new Scenario() { Name= "Test" };
+
+            result = dataSource.PutScenario("TestPut",scenario);
+
+            Assert.IsNotNull(result);
+            result.Match((val) => Assert.IsTrue(val), (ex) => Assert.Fail(ex.Message));
+            Assert.AreNotEqual(0, new FileInfo(fileName).Length);
+
+            File.Delete(fileName);
+
+        }
+        #endregion
 
     }
 }

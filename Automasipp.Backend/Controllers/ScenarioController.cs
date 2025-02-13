@@ -62,5 +62,29 @@ namespace Automasipp.backend.Controllers
             );
         }//*/
 
+        [HttpPut("{Name}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<bool> PutScenario(string Name,Scenario Scenario)
+        {
+            if (Name == null) return this.CreateErrorAction<bool>(LogLevel.Error, "Scenario name must be provided", (m) => this.BadRequest(m));
+            if (Scenario == null) return this.CreateErrorAction<bool>(LogLevel.Error, "Scenario content must be provided", (m) => this.BadRequest(m));
+
+            return dataSource.PutScenario(Name,Scenario).SelectActionResult(
+                (item) => Ok(true),
+                (ex) =>
+                {
+                    switch (ex)
+                    {
+                        case FileNotFoundException: return this.CreateErrorAction<bool>(LogLevel.Warning, $"Scenario {Name} was not found", (m) => this.NotFound(m)); ;
+                        case DirectoryNotFoundException: return this.CreateErrorAction<bool>(LogLevel.Warning, $"Scenario {Name} was not found", (m) => this.NotFound(m)); ;
+                        default: return this.CreateErrorAction<bool>(LogLevel.Error, "An internal server error occured", (m) => new InternalServerError(m)); ;
+                    }
+                }
+            );
+        }//*/
+
+
     }
 }

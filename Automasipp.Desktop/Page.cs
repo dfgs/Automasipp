@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Automasipp.Desktop
 {
-    public abstract class Page:DependencyObject,IPage
+    public abstract class Page : DependencyObject, IPage
     {
 
 
@@ -20,16 +20,37 @@ namespace Automasipp.Desktop
         }
 
 
-        private IPageManager pageManager;
+
+        public static readonly DependencyProperty ErrorMessageProperty = DependencyProperty.Register("ErrorMessage", typeof(string), typeof(Page), new PropertyMetadata(null));
+        public string? ErrorMessage
+        {
+            get { return (string?)GetValue(ErrorMessageProperty); }
+            set { SetValue(ErrorMessageProperty, value); }
+        }
+
+
+
+
+        private IPageManager? pageManager;
+        protected IPageManager? PageManager
+        {
+            get => pageManager;
+        }
+
+        IPageManager? IPage.PageManager
+        {
+            get => pageManager;
+            set => this.pageManager=value;
+        }
+
 
         public abstract string Name
         {
             get;
         }
 
-        public Page(IPageManager PageManager)
+        public Page()
         {
-            this.pageManager = PageManager;
         }
 
         protected abstract Task OnLoadAsync();
@@ -47,6 +68,7 @@ namespace Automasipp.Desktop
             catch (Exception ex)
             {
                 State = PageState.Error;
+                ErrorMessage=ex.Message;
                 return Result.Fail<bool>(ex);
             }
             

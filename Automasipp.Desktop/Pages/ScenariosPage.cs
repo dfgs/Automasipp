@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using Automasipp.Desktop.ViewModels;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,10 @@ namespace Automasipp.Desktop.Pages
     public class ScenariosPage : RESTPage
     {
 
-
-
-        public static readonly DependencyProperty NamesProperty = DependencyProperty.Register("Names", typeof(List<string>), typeof(ScenariosPage), new PropertyMetadata(null));
-        public List<string> Names
+        public static readonly DependencyProperty NamesProperty = DependencyProperty.Register("Items", typeof(List<ScenarioLink>), typeof(ScenariosPage), new PropertyMetadata(null));
+        public List<ScenarioLink> Items
         {
-            get { return (List<string>)GetValue(NamesProperty); }
+            get { return (List<ScenarioLink>)GetValue(NamesProperty); }
             private set { SetValue(NamesProperty, value); }
         }
 
@@ -24,15 +23,18 @@ namespace Automasipp.Desktop.Pages
 
         public override string Name => "Scenarios";
 
-        public ScenariosPage(IPageManager PageManager):base(PageManager)
+        public ScenariosPage():base()
         {
         }
 
 
         protected override async Task OnLoadAsync()
         {
+            if (PageManager == null) return;
+
+            //await Task.Delay(10000);
             string[] response = await GetAsync<string[]>("Scenario/names");
-            Names = new List<string>(response);
+            Items = new List<ScenarioLink>(response.Select(item=> new ScenarioLink(PageManager) { ScenarioName=item}));
         }
 
        

@@ -9,13 +9,13 @@ namespace Automasipp.Desktop
 {
     public class PageManager:DependencyObject,IPageManager
     {
-        private List<Page> pages;
+        private List<IPage> pages;
 
 
-        public static readonly DependencyProperty CurrentPageProperty = DependencyProperty.Register("CurrentPage", typeof(Page), typeof(PageManager), new PropertyMetadata(null));
-        public Page CurrentPage
+        public static readonly DependencyProperty CurrentPageProperty = DependencyProperty.Register("CurrentPage", typeof(IPage), typeof(PageManager), new PropertyMetadata(null));
+        public IPage CurrentPage
         {
-            get { return (Page)GetValue(CurrentPageProperty); }
+            get { return (IPage)GetValue(CurrentPageProperty); }
             private set { SetValue(CurrentPageProperty, value); }
         }
         IPage IPageManager.CurrentPage
@@ -26,17 +26,21 @@ namespace Automasipp.Desktop
 
         public PageManager() 
         {
-            this.pages = new List<Page>();    
+            this.pages = new List<IPage>();    
         }
 
-        public async Task OpenPageAsync(Page Page)
+        public async Task OpenPageAsync(IPage Page)
         {
+            Page.PageManager=this;
             pages.Add(Page);
             CurrentPage= Page;
             await Page.LoadAsync();
         }
-    
 
+        public T? GetPage<T>() where T : IPage
+        {
+            return pages.OfType<T>().FirstOrDefault();
+        }
 
     }
 

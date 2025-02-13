@@ -12,5 +12,11 @@ namespace Automasipp.Desktop
         {
             get;
         }
+
+        Task OpenPageAsync(IPage Page);
+
+
+        T? GetPage<T>() where T:IPage;
+
     }
 }

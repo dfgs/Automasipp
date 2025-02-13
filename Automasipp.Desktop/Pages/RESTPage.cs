@@ -1,4 +1,6 @@
 ﻿using RestSharp;
+using RestSharp.Serializers;
+using RestSharp.Serializers.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,38 +11,26 @@ namespace Automasipp.Desktop.Pages
 {
     public abstract class RESTPage:Page
     {
-        private static readonly RestClient client;
-        private static bool disposed;
 
-        static RESTPage()
+        
+
+        public RESTPage():base()
         {
-            RestClientOptions options;
-            options = new RestClientOptions("http://localhost:5000/");
-            client = new RestClient(options);
-        }
-
-        public RESTPage(IPageManager PageManager):base(PageManager)
-        {          
-
+ 
         }
 
         protected async Task<T> GetAsync<T>(string Resource)
         {
+            RestClient? client = PageManager?.GetPage<ConnectionPage>()?.Client;
+            if (client== null) throw new InvalidOperationException("Cannot get REST client");
+
             T? response = await client.GetAsync<T>(Resource);
             if (response == null) throw new InvalidOperationException("Result is null");
             return response;
 
         }
 
-        protected override void OnDispose()
-        {
-            base.OnDispose();
-            if (!disposed)
-            {
-                disposed = true;
-                client.Dispose();
-            }
-        }
+       
 
     }
 }

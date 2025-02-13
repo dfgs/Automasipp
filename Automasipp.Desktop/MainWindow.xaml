@@ -9,17 +9,13 @@
         mc:Ignorable="d"
         Title="Automasipp" Height="600" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" ResizeMode="CanResizeWithGrip" Loaded="Window_Loaded" >
 
-	<Window.Resources>
-		<DataTemplate DataType="{x:Type pages:ScenariosPage}">
-			<views:ScenariosView/>
-		</DataTemplate>
-	</Window.Resources>
+	
     <DockPanel>
 		<StatusBar DockPanel.Dock="Bottom">
 			<TextBlock Text="{Binding CurrentPage.Name}"/>
 			<Separator/>
 			<TextBlock Text="{Binding CurrentPage.State, StringFormat='State: {0}'}"/>
 		</StatusBar>
-		<ContentPresenter Content="{Binding CurrentPage}"/>
+		<views:PageView DataContext="{Binding CurrentPage}"/>
 	</DockPanel>
 </Window>

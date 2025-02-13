@@ -5,6 +5,7 @@ using ResultTypeLib;
 using System;
 using Automasipp.Backend.Controllers;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Net.Mime;
 
 namespace Automasipp.backend.Controllers
 {
@@ -48,7 +49,7 @@ namespace Automasipp.backend.Controllers
             if (Name == null) return this.CreateErrorAction<Scenario>(LogLevel.Error, "Scenario name must be provided",(m)=>this.BadRequest(m));
 
             return dataSource.GetScenario(Name).SelectActionResult(
-                (item) => Ok(item),
+                (item) => Ok(item) ,
                 (ex) =>
                 {
                     switch (ex)

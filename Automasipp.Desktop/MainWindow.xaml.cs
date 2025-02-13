@@ -30,7 +30,7 @@ namespace Automasipp.Desktop
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await pageManager.OpenPageAsync(new ScenariosPage(pageManager)); 
+            await pageManager.OpenPageAsync(new ConnectionPage()); 
         }
     }
 }

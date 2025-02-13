@@ -11,20 +11,21 @@ namespace Automasipp.Desktop.Pages
 {
     public class ScenarioPage : RESTPage
     {
- 
-      
 
+
+        private string scenarioName;
 
         public override string Name => "Scenario";
 
-        public ScenarioPage(IPageManager PageManager):base(PageManager)
+        public ScenarioPage(string ScenarioName):base()
         {
+            this.scenarioName = ScenarioName;
         }
 
 
         protected override async Task OnLoadAsync()
         {
-            Scenario response = await GetAsync<Scenario>($"Scenario/names/test");
+            Scenario response = await GetAsync<Scenario>($"Scenario/{scenarioName}");
             
             
         }

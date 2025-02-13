@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResultTypeLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,13 @@ namespace Automasipp.Desktop
 {
     public interface IPage:IDisposable
     {
+
+        IPageManager? PageManager 
+        { 
+            get;
+            set;
+        }
+
         PageState State
         {
             get;
@@ -16,6 +24,9 @@ namespace Automasipp.Desktop
         { 
             get;
         }
+
+        Task<IResult<bool>> LoadAsync();
+
 
 
     }

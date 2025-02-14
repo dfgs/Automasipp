@@ -28,10 +28,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-string scenariosFolder= builder.Configuration.GetValue<string>("ScenariosFolder")??"/opt/sipp";
+string scenariosFolder = builder.Configuration.GetValue<string>("ScenariosFolder") ?? "/opt/sipp/Scenarios";
+string sippFolder = builder.Configuration.GetValue<string>("SippFolder") ?? "/opt/sipp";
+string sessionsFolder = builder.Configuration.GetValue<string>("SessionsFolder") ?? "/opt/sipp/Sessions";
 
 
-builder.Services.AddSingleton<IScenarioDataSource, ScenarioDataSource>((serviceProvider)=> new ScenarioDataSource(builder.CreateLogger<ScenarioDataSource>(), scenariosFolder));
+builder.Services.AddSingleton<IScenarioDataSource, ScenarioDataSource>((serviceProvider) => new ScenarioDataSource(builder.CreateLogger<ScenarioDataSource>(), scenariosFolder));
+builder.Services.AddSingleton<ISessionDataSource, SessionDataSource>((serviceProvider) => new SessionDataSource(builder.CreateLogger<SessionDataSource>(), sippFolder,sessionsFolder, scenariosFolder));
 
 
 var app = builder.Build();

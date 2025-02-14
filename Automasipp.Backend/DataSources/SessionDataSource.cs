@@ -42,7 +42,7 @@ namespace Automasipp.backend.DataSources
             string fileName = Path.GetFileNameWithoutExtension(FullPath);
             Match match=sessionRegex.Match(fileName);
 
-            if (!match.Success) throw new InvalidDataException($"Invalid session file name: {fileName}");
+            if (!match.Success) throw new FormatException($"Invalid session file name: {fileName}");
 
             return new Session() { ScenarioName = match.Groups["ScenarioName"].Value , PID = int.Parse(match.Groups["PID"].Value) };
         }

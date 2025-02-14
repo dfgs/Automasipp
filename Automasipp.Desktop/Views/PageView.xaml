@@ -20,25 +20,9 @@
 			<views:ScenarioView/>
 		</DataTemplate>
 	</UserControl.Resources>
-	<UserControl.Style>
-		<Style TargetType="{x:Type UserControl}">
-			<Setter Property="Content">
-				<Setter.Value>
-					<ContentPresenter Content="{Binding}"/>
-				</Setter.Value>
-			</Setter>
-			<Style.Triggers>
-				<DataTrigger Binding="{Binding State}" Value="Error">
-					<DataTrigger.Setters>
-						<Setter Property="Content">
-							<Setter.Value>
-								<TextBlock Text="{Binding ErrorMessage}"/>
-							</Setter.Value>
-						</Setter>
-					</DataTrigger.Setters>
-				</DataTrigger>
-			</Style.Triggers>
-		</Style>
-	</UserControl.Style>
 	
+	<DockPanel>
+		<TextBlock Foreground="Red" Text="{Binding ErrorMessage}" DockPanel.Dock="Top"/>
+		<ContentPresenter Content="{Binding}"/>
+	</DockPanel>
 </UserControl>

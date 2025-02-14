@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Automasipp.Desktop.Views"
+             xmlns:views="clr-namespace:Automasipp.Desktop.Views"
              xmlns:models="clr-namespace:Automasipp.Models;assembly=Automasipp.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -32,7 +32,25 @@
 			<TextBlock Text="Name:" FontWeight="Bold"/>
 			<TextBox Margin="5" Text="{Binding Name}" />
 			<TextBlock Text="Commands:" FontWeight="Bold"/>
-			<ListBox Margin="5" ItemsSource="{Binding Commands}" Height="150"/>
+			<ListBox Margin="5" ItemsSource="{Binding Commands}" Height="150">
+				<ListBox.Resources>
+					<ResourceDictionary>
+						<DataTemplate DataType="{x:Type models:SendCommand}">
+							<views:CommandView Text="Send" ArrowOrientation="Right"/>
+						</DataTemplate>
+
+						<DataTemplate DataType="{x:Type models:ReceiveCommand}">
+							<views:CommandView Text="{Binding ResponseCode}" ArrowOrientation="Left"/>
+						</DataTemplate>
+
+					</ResourceDictionary>
+				</ListBox.Resources>
+				<ListBox.ItemContainerStyle>
+					<Style TargetType="{x:Type ListBoxItem}">
+						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+					</Style>
+				</ListBox.ItemContainerStyle>
+			</ListBox>
 		</StackPanel>
 		<UniformGrid Columns="2" >
 			<Button Content="Save" Width="150" Command="{Binding SaveCommand}"/>

@@ -1,6 +1,8 @@
 using Automasipp.backend.DataSources;
 using Automasipp.Backend;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using NReco.Logging.File;
 using System;
 
 
@@ -8,8 +10,11 @@ using System;
 
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Logging.ClearProviders();
-//builder.Logging.AddConsole();
+builder.Logging.ClearProviders();
+builder.Services.AddLogging(loggingBuilder => {
+    var loggingSection = builder.Configuration.GetSection("Logging");
+    loggingBuilder.AddFile(loggingSection);
+});
 
 // Add services to the container.
 
@@ -21,6 +26,7 @@ builder.Services.AddControllers()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 string scenariosFolder= builder.Configuration.GetValue<string>("ScenariosFolder")??"/opt/sipp";
 
@@ -36,6 +42,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 

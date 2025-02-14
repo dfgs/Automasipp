@@ -1,4 +1,6 @@
 ﻿using Automasipp.backend.DataSources;
+using Microsoft.Extensions.Configuration;
+using NReco.Logging.File;
 
 namespace Automasipp.Backend
 {
@@ -10,6 +12,7 @@ namespace Automasipp.Backend
             {
                 config.AddConsole();
                 config.AddConfiguration(Builder.Configuration.GetSection("Logging"));
+                config.AddFile(Builder.Configuration.GetSection("Logging"));
             }).CreateLogger<T>();
         }
     }

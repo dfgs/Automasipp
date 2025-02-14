@@ -29,7 +29,7 @@ namespace Automasipp.Desktop.Pages
 
 
 
-        public static readonly DependencyProperty HostnameProperty = DependencyProperty.Register("Hostname", typeof(string), typeof(ConnectionPage), new PropertyMetadata("localhost"));
+        public static readonly DependencyProperty HostnameProperty = DependencyProperty.Register("Hostname", typeof(string), typeof(ConnectionPage), new PropertyMetadata("10.0.10.12"));
         public string Hostname
         {
             get { return (string)GetValue(HostnameProperty); }
@@ -65,7 +65,7 @@ namespace Automasipp.Desktop.Pages
             if (PageManager==null) return;
 
             RestClientOptions options;
-            options = new RestClientOptions($"http://{Hostname}:{Port}/");
+            options = new RestClientOptions($"https://{Hostname}:{Port}/") { FollowRedirects=true, RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true };
             // json serializer doesn't work with nested class (Command)
             client = new RestClient(options, configureSerialization: s => s.UseXml());
 

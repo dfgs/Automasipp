@@ -10,7 +10,12 @@ namespace Automasipp.Models
     [XmlRoot("pause")]
     public class PauseCommand:Command
     {
-
+        [XmlAttribute("milliseconds")]
+        public int Duration
+        {
+            get;
+            set;
+        }
 
     }
 }

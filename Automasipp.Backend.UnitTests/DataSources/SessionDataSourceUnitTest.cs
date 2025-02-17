@@ -16,6 +16,53 @@ namespace Automasipp.Backend.UnitTests.DataSources
     [TestClass]
     public class SessionDataSourceUnitTest
     {
+
+        #region constructor
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfLoggerIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(null, "invalidfolder", "invalidfolder", "invalidfolder"));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfSippFolderIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, null, "invalidfolder", "invalidfolder"));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfSessionsFolderIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", null, "invalidfolder"));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+
+
+        }
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfScenariosFolderIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", "invalidfolder", null));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+        #endregion
+
+
         #region CreateSessionFromFileName
         [TestMethod]
         public void CreateSessionFromFileNameShouldThrowExceptionIfFileNameIsInvalid()
@@ -30,6 +77,22 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             Assert.ThrowsException<FormatException>(() => dataSource.CreateSessionFromFileName("invalidFileName"));
         }
+        [TestMethod]
+        public void CreateSessionFromFileNameShouldThrowExceptionIfFileNameIsNull()
+        {
+            ILogger logger;
+            SessionDataSource dataSource;
+
+
+            logger = Mock.Of<ILogger>();
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder");
+
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => dataSource.CreateSessionFromFileName(null));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+
         [TestMethod]
         public void CreateSessionFromFileNameShouldSuccess()
         {
@@ -77,6 +140,8 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Mock.VerifyAll();
 
         }
+      
+
         [TestMethod]
         public void GetSessionsShouldSuccess()
         {
@@ -102,9 +167,92 @@ namespace Automasipp.Backend.UnitTests.DataSources
             , (ex) => Assert.Fail());
 
         }
+
+        [TestMethod]
+        public void GetSessionsWithScenarioNameShouldSuccess()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<Session[]> result;
+
+
+            logger = Mock.Of<ILogger>();
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder");
+
+            result = dataSource.GetSessions("demo1");
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Succeeded());
+            result.Match((val) =>
+            {
+                Assert.AreEqual(1, val.Length);
+                Assert.AreEqual("demo1", val[0].ScenarioName);
+                Assert.AreEqual(1234, val[0].PID);
+            }
+            , (ex) => Assert.Fail());
+
+        }
+        [TestMethod]
+        public void GetSessionsWithInvalidScenarioNameShouldSuccess()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<Session[]> result;
+
+
+            logger = Mock.Of<ILogger>();
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder");
+
+            result = dataSource.GetSessions("demo2");
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Succeeded());
+            result.Match((val) =>
+            {
+                Assert.AreEqual(0, val.Length);
+            }
+            , (ex) => Assert.Fail());
+
+        }
+
+        [TestMethod]
+        public void GetSessionsWithScenarioNameShouldFailAndLogErrorIfScenariosFolderIsNull()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<Session[]> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder");
+
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            result = dataSource.GetSessions(null);
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(),
+            (ex) =>
+            {
+                Assert.IsNotNull(result);
+                Assert.IsFalse(result.Succeeded());
+                result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<ArgumentNullException>(ex));
+            }
+
+            );
+
+            Mock.VerifyAll();
+
+
+        }
         #endregion
 
-        
+
 
     }
 }

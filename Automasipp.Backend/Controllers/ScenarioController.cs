@@ -44,6 +44,7 @@ namespace Automasipp.backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Scenario> GetScenario(string Name)
         {
             if (Name == null) return this.CreateErrorAction<Scenario>(LogLevel.Error, "Scenario name must be provided",(m)=>this.BadRequest(m));
@@ -66,6 +67,7 @@ namespace Automasipp.backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<bool> PutScenario(string Name, [FromBody] Scenario Scenario)
         {
             if (Name == null) return this.CreateErrorAction<bool>(LogLevel.Error, "Scenario name must be provided", (m) => this.BadRequest(m));

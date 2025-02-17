@@ -10,8 +10,9 @@ namespace Automasipp.backend.DataSources
     {
         private string scenariosFolder;
         public ScenarioDataSource(ILogger Logger, string ScenariosFolder):base(Logger) 
-        { 
-            if (ScenariosFolder==null) throw new ArgumentNullException(nameof(ScenariosFolder));    
+        {
+            if (Logger == null) throw new ArgumentNullException(nameof(Logger));
+            if (ScenariosFolder == null) throw new ArgumentNullException(nameof(ScenariosFolder));
             this.scenariosFolder = ScenariosFolder;
         }
 

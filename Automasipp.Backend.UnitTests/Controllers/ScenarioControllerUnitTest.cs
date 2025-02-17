@@ -73,7 +73,30 @@ namespace Automasipp.Backend.UnitTests.Controllers
         #endregion
 
         #region GetScenario
+        [TestMethod]
+        public void GetScenarioShouldReturnCode500IfDataSourceFails()
+        {
+            ILogger<ScenarioController> logger;
+            IScenarioDataSource dataSource;
+            ScenarioController controller;
+            ActionResult<Scenario> result;
+            InternalServerError? koResult;
 
+            logger = Mock.Of<ILogger<ScenarioController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<IScenarioDataSource>();
+            Mock.Get(dataSource).Setup(m => m.GetScenario(It.IsAny<string>())).Returns(Result.Fail<Scenario>(new InvalidOperationException("error content")));
+
+            controller = new ScenarioController(logger, dataSource);
+
+            result = controller.GetScenario("anyname");
+            koResult = result.Result as InternalServerError;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Mock.VerifyAll();
+        }
         [TestMethod]
         public void GetScenarioShouldReturnCode404IfFileIsNotFound()
         {
@@ -181,7 +204,32 @@ namespace Automasipp.Backend.UnitTests.Controllers
         #endregion
 
         #region PutScenario
+        [TestMethod]
+        public void PutScenarioShouldReturnCode500IfDataSourceFails()
+        {
+            ILogger<ScenarioController> logger;
+            IScenarioDataSource dataSource;
+            ScenarioController controller;
+            ActionResult<bool> result;
+            InternalServerError? koResult;
+            Scenario scenario;
 
+            logger = Mock.Of<ILogger<ScenarioController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<IScenarioDataSource>();
+            Mock.Get(dataSource).Setup(m => m.PutScenario(It.IsAny<string>(), It.IsAny<Scenario>())).Returns(Result.Fail<bool>(new InvalidOperationException("error content")));
+
+            controller = new ScenarioController(logger, dataSource);
+
+            scenario = new Scenario() { Name = "testscenario" };
+            result = controller.PutScenario("anyname", scenario);
+            koResult = result.Result as InternalServerError;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Mock.VerifyAll();
+        }
         [TestMethod]
         public void PutScenarioShouldReturnCode404IfFileIsNotFound()
         {

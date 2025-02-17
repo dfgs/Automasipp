@@ -17,6 +17,7 @@ namespace Automasipp.backend.DataSources
         private string scenariosFolder;
         public SessionDataSource(ILogger Logger,string SippFolder, string SessionsFolder, string ScenariosFolder) :base(Logger) 
         {
+            if (Logger == null) throw new ArgumentNullException(nameof(Logger));
             if (SessionsFolder == null) throw new ArgumentNullException(nameof(SessionsFolder));
             if (SippFolder == null) throw new ArgumentNullException(nameof(SippFolder));
             if (ScenariosFolder == null) throw new ArgumentNullException(nameof(ScenariosFolder));
@@ -33,12 +34,16 @@ namespace Automasipp.backend.DataSources
         }
         public IResult<Session[]> GetSessions(string ScenarioName)
         {
+            if (ScenarioName == null) return Result.Fail<Session[]>(new ArgumentNullException(nameof(ScenarioName)));
+  
             Log(LogLevel.Information, $"List all session from scenario {ScenarioName} in folder {sessionsFolder}");
             return Try(() => Directory.GetFiles(sessionsFolder, $"{ScenarioName}_*.session").Select(fullPath => CreateSessionFromFileName(fullPath)).ToArray());
         }
 
         public Session CreateSessionFromFileName(string FullPath)
         {
+            if (FullPath == null) throw new ArgumentNullException(nameof(FullPath));
+
             string fileName = Path.GetFileNameWithoutExtension(FullPath);
             Match match=sessionRegex.Match(fileName);
 
@@ -49,6 +54,8 @@ namespace Automasipp.backend.DataSources
 
         public IResult<Session> StartSession(string ScenarioName)
         {
+            if (ScenarioName == null) return Result.Fail<Session>(new ArgumentNullException(nameof(ScenarioName)));
+
             return Try( () => 
             {
                 Process process = new Process();

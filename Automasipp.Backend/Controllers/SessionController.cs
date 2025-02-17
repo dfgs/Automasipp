@@ -37,7 +37,14 @@ namespace Automasipp.backend.Controllers
         {
             return dataSource.GetSessions().SelectActionResult(
                 (items) => Ok(items),
-                (ex) => new InternalServerError(ex.Message)
+                (ex) =>
+                {
+                    switch (ex)
+                    {
+                        case DirectoryNotFoundException: return this.CreateErrorAction<Session[]>(LogLevel.Warning, $"Session folder was not found", (m) => this.NotFound(m));
+                        default: return this.CreateErrorAction<Session[]>(LogLevel.Error, "An internal server error occured", (m) => new InternalServerError(m)); ;
+                    }
+                }
             );//*/
         }
         
@@ -45,6 +52,7 @@ namespace Automasipp.backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Session[]> GetSessions(string ScenarioName)
         {
             if (ScenarioName == null) return this.CreateErrorAction<Session[]>(LogLevel.Error, "Scenario name must be provided",(m)=>this.BadRequest(m));
@@ -64,19 +72,21 @@ namespace Automasipp.backend.Controllers
 
         [HttpPut("{ScenarioName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Session> StartSession(string ScenarioName)
         {
             if (ScenarioName == null) return this.CreateErrorAction<Session>(LogLevel.Error, "Scenario name must be provided", (m) => this.BadRequest(m));
 
             return dataSource.StartSession(ScenarioName).SelectActionResult(
-                (item) => Ok(true),
+                (item) => Ok(item),
                 (ex) =>
                 {
                     switch (ex)
                     {
-                        case DirectoryNotFoundException: return this.CreateErrorAction<Session>(LogLevel.Warning, $"Session folder was not found", (m) => this.NotFound(m));
+                        //case FileNotFoundException: return this.CreateErrorAction<Session>(LogLevel.Warning, $"Scenawas not found", (m) => this.NotFound(m));
+                        //case DirectoryNotFoundException: return this.CreateErrorAction<Session>(LogLevel.Warning, $"Session folder was not found", (m) => this.NotFound(m));
                         default: return this.CreateErrorAction<Session>(LogLevel.Error, "An internal server error occured", (m) => new InternalServerError(m)); ;
                     }
                 }

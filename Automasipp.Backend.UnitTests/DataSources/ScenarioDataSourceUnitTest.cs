@@ -17,6 +17,30 @@ namespace Automasipp.Backend.UnitTests.DataSources
     public class ScenarioDataSourceUnitTest
     {
 
+        #region constructor
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfLoggerIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new ScenarioDataSource(null, "invalidfolder"));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfScenarioIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new ScenarioDataSource(logger, null));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+
+        #endregion
+
         #region GetScenarioNames
         [TestMethod]
         public void GetScenarioNamesShouldFailAndLogErrorIfSourceFolderIsInvalid()
@@ -41,6 +65,8 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Mock.VerifyAll();
 
         }
+        
+
         [TestMethod]
         public void GetScenarioNamesShouldSuccess()
         {

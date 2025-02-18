@@ -1,4 +1,5 @@
-﻿using ResultTypeLib;
+﻿using Automasipp.Desktop.Pages;
+using ResultTypeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,20 @@ namespace Automasipp.Desktop
 {
     public abstract class Page : DependencyObject, IPage
     {
+
+        public static readonly DependencyProperty CloseCommandProperty = DependencyProperty.Register("CloseCommand", typeof(PageCommand), typeof(Page), new PropertyMetadata(null));
+        public PageCommand CloseCommand
+        {
+            get { return (PageCommand)GetValue(CloseCommandProperty); }
+            set { SetValue(CloseCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty FocusCommandProperty = DependencyProperty.Register("FocusCommand", typeof(PageCommand), typeof(Page), new PropertyMetadata(null));
+        public PageCommand FocusCommand
+        {
+            get { return (PageCommand)GetValue(FocusCommandProperty); }
+            set { SetValue(FocusCommandProperty, value); }
+        }
 
 
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register("State", typeof(PageState), typeof(Page), new PropertyMetadata(PageState.Undefined));
@@ -51,6 +66,9 @@ namespace Automasipp.Desktop
 
         public Page()
         {
+            this.CloseCommand = new PageCommand(this, (parameter) => OnCanClose(parameter), (parameter) => CloseCommandExecutedAsync());
+            this.FocusCommand = new PageCommand(this, (parameter) => true, (parameter) => FocusCommandExecutedAsync());
+
         }
 
         protected abstract Task OnLoadAsync();
@@ -65,6 +83,7 @@ namespace Automasipp.Desktop
         {
             return await Task.FromResult(Result.Success(true));
         }
+
         public async Task<IResult<T>> RunAsync<T>(Task<T> Func)
         {
             State = PageState.Loading;
@@ -106,5 +125,29 @@ namespace Automasipp.Desktop
         protected virtual void OnDispose()
         {
         }
+
+
+        protected virtual bool OnCanClose(object? parameter)
+        {
+            return true;
+        }
+        
+
+        private async Task CloseCommandExecutedAsync()
+        {
+            if (PageManager == null) return;
+            await PageManager.ClosePageAsync();
+        }
+        private async Task FocusCommandExecutedAsync()
+        {
+            if (PageManager == null) return;
+            while(PageManager.CurrentPage!=this)
+            {
+                await PageManager.ClosePageAsync();
+            }
+            
+        }
+
+
     }
 }

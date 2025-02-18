@@ -52,7 +52,7 @@ namespace Automasipp.Desktop.Pages
 
         public ConnectionPage():base()
         {          
-            ConnectCommand=new PageCommand(this,(_)=>true,() => ConnectCommandExecutedAsync());
+            ConnectCommand=new PageCommand(this,(_)=>true,(_) => ConnectCommandExecutedAsync());
         }
 
         protected override async Task OnLoadAsync()

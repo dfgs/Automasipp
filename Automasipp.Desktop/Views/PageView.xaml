@@ -22,7 +22,18 @@
 	</UserControl.Resources>
 	
 	<DockPanel>
-		<TextBlock Foreground="Red" Text="{Binding ErrorMessage}" DockPanel.Dock="Top"/>
+		<Border DockPanel.Dock="Top" BorderThickness="1" BorderBrush="Gray" Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}">
+			<Border.Style>
+				<Style TargetType="{x:Type Border}">
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
+							<Setter Property="Visibility" Value="Collapsed"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Border.Style>
+			<TextBlock Margin="5" Foreground="Black" FontWeight="Bold" Text="{Binding ErrorMessage,FallbackValue='No error',TargetNullValue='No error'}"  />
+		</Border>
 		<ContentPresenter Content="{Binding}"/>
 	</DockPanel>
 </UserControl>

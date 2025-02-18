@@ -1,6 +1,7 @@
 ﻿using ResultTypeLib;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +11,12 @@ namespace Automasipp.Desktop
 {
     public class PageManager:DependencyObject,IPageManager
     {
-        private List<IPage> pages;
+        private ObservableCollection<IPage> pages;
 
+        public IEnumerable<IPage> OpenedPages
+        {
+            get => pages;
+        }
 
         public static readonly DependencyProperty CurrentPageProperty = DependencyProperty.Register("CurrentPage", typeof(IPage), typeof(PageManager), new PropertyMetadata(null));
         public IPage? CurrentPage
@@ -27,7 +32,7 @@ namespace Automasipp.Desktop
 
         public PageManager() 
         {
-            this.pages = new List<IPage>();    
+            this.pages = new ObservableCollection<IPage>();    
         }
 
         public async Task OpenPageAsync(IPage Page)

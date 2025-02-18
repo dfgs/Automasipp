@@ -18,9 +18,9 @@ namespace Automasipp.Desktop
         private IPage page;
 
         private Func<object?,bool> canExecuteHandler;
-        private Func<Task> executeHandler;
+        private Func<object?,Task> executeHandler;
 
-        public PageCommand(IPage Page, Func<object?,bool> CanExecuteHandler,Func<Task> ExecuteHandler )
+        public PageCommand(IPage Page, Func<object?, bool> CanExecuteHandler, Func<object?, Task> ExecuteHandler )
         {
             this.page = Page;
             this.canExecuteHandler= CanExecuteHandler;
@@ -35,7 +35,7 @@ namespace Automasipp.Desktop
 
         public async void Execute(object? parameter)
         {
-            await page.RunAsync(executeHandler());
+            await page.RunAsync(executeHandler(parameter));
         }
 
 

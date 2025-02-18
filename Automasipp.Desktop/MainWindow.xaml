@@ -16,6 +16,7 @@
 			<Separator/>
 			<TextBlock Text="{Binding CurrentPage.State, StringFormat='State: {0}'}"/>
 		</StatusBar>
+		<views:OpenedPagesView DockPanel.Dock="Top" DataContext="{Binding OpenedPages}"/>
 		<views:PageView DataContext="{Binding CurrentPage}"/>
 	</DockPanel>
 </Window>

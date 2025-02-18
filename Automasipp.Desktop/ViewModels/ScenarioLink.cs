@@ -12,17 +12,12 @@ namespace Automasipp.Desktop.ViewModels
     {
         public required string ScenarioName { get; set; }
 
-        public PageCommand OpenCommand
-        {
-            get;
-            private set;
-        }
+        
 
         private IPageManager pageManager;
 
         public ScenarioLink(IPageManager PageManager,IPage Page)
         {
-            OpenCommand = new PageCommand(Page,(_) => true, () => OpenAsync());
             this.pageManager = PageManager; 
         }
 

@@ -8,6 +8,11 @@ namespace Automasipp.Desktop
 {
     public interface IPageManager
     {
+        IEnumerable<IPage> OpenedPages
+        {
+            get;
+        }
+
         IPage? CurrentPage
         {
             get;

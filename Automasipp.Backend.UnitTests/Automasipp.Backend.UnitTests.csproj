@@ -22,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Reports\Demo1_1234.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Scenarios\sipp.dtd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

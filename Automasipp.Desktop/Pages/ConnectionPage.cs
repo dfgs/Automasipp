@@ -1,6 +1,7 @@
 ﻿using RestSharp;
 using RestSharp.Serializers;
 using RestSharp.Serializers.Json;
+using ResultTypeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,9 +56,10 @@ namespace Automasipp.Desktop.Pages
             ConnectCommand=new PageCommand(this,(_)=>true,(_) => ConnectCommandExecutedAsync());
         }
 
-        protected override async Task OnLoadAsync()
+        protected override async Task<IResult<bool>> OnLoadAsync()
         {
             await Task.Yield();
+            return Result.Success(true);
         }
 
         private async Task ConnectCommandExecutedAsync()

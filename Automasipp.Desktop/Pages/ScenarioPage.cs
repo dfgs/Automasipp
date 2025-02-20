@@ -1,5 +1,6 @@
 ﻿using Automasipp.Models;
 using RestSharp;
+using ResultTypeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,15 +41,21 @@ namespace Automasipp.Desktop.Pages
 
             this.SaveCommand = new PageCommand(this, (_) => true, (_) => SaveCommandExecutedAsync());
         }
-
-
-        protected override async Task OnLoadAsync()
+        protected override async Task<IResult<bool>> OnLoadAsync()
         {
-            Scenario response = await GetAsync<Scenario>($"Scenario/{scenarioName}");
-            
-            this.Scenario=response;
-                        
+            if (PageManager == null) return Result.Fail<bool>(new ArgumentException("Page manager is not defined"));
+
+            //await Task.Delay(10000);
+            IResult<Scenario> response = await GetAsync<Scenario>($"Scenario/{scenarioName}");
+            return response.SelectResult((scenario) =>
+            {
+                this.Scenario = scenario;
+                return Result.Success(true);
+            }, (ex) => ex);
+
         }
+
+        
         private async Task SaveCommandExecutedAsync()
         {
             await  PutAsync<bool>($"Scenario/{scenarioName}", Scenario);

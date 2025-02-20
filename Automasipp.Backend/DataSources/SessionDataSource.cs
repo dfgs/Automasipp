@@ -1,10 +1,13 @@
 ﻿using Automasipp.Models;
+using Microsoft.AspNetCore.Mvc;
 using ResultTypeLib;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
+using static System.Net.WebRequestMethods;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Automasipp.backend.DataSources
 {
@@ -51,29 +54,82 @@ namespace Automasipp.backend.DataSources
 
             return new Session() { ScenarioName = match.Groups["ScenarioName"].Value , PID = int.Parse(match.Groups["PID"].Value) };
         }
+        
+        private Process CreateProcess(string ScenarioName)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = Path.Combine(sippFolder, "sipp");
 
-        public IResult<Session> StartSession(string ScenarioName)
+            // -bg run in background => pid is incorrect when using this option
+            process.StartInfo.Arguments = $"10.0.1.11 -s 1001 -sf {scenariosFolder}/{ScenarioName}.xml -l 1 -m 1 -mi 10.0.1.133 -trace_stat";
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            process.StartInfo.UseShellExecute = false;
+
+            /*process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.EnableRaisingEvents = true;
+            process.OutputDataReceived += Process_OutputDataReceived; ;
+            process.ErrorDataReceived += Process_ErrorDataReceived;
+            //*/
+
+            return process; 
+        }
+        private Session RunSession(string ScenarioName)
+        {
+            Process process = CreateProcess(ScenarioName);
+
+            if (!process.Start())
+            {
+                Log(LogLevel.Error, $"Failed to start sipp process");
+                throw new InvalidOperationException("Failed to start sipp process");
+            }
+
+            /*process.BeginErrorReadLine();
+            process.BeginOutputReadLine();//*/
+
+           
+            if (process.HasExited)
+            {
+                Log(LogLevel.Information, $"Process exited with code {process.ExitCode}");
+
+                // Upon exit(on fatal error or when the number of asked calls (-m option) is reached, sipp exits with one of the following exit code:
+                // 0: All calls were successful
+                // 1: At least one call failed
+                // 97: Exit on internal command.Calls may have been processed
+                // 99: Normal exit without calls processed
+                // 253: RTP validation failure
+                // -1: Fatal error
+                // -2: Fatal error binding a socket
+                if (process.ExitCode < 0) throw new InvalidOperationException($"Process exited with result {process.ExitCode}");
+            }
+
+            Session session = new Session() { ScenarioName = ScenarioName, PID = process.Id };
+            System.IO.File.Create(Path.Combine(sessionsFolder, $"{session.ScenarioName}_{session.PID}.session"));
+
+            return session;
+        }
+       
+        public  IResult<Session> StartSession(string ScenarioName)
         {
             if (ScenarioName == null) return Result.Fail<Session>(new ArgumentNullException(nameof(ScenarioName)));
 
-            return Try( () => 
-            {
-                Process process = new Process();
-                process.StartInfo.FileName = Path.Combine(sippFolder,"sipp");
-                process.StartInfo.Arguments = $"-s 1001 -sf {scenariosFolder}/{ScenarioName}.xml uac 10.0.1.11 -l 1 -m 1 -mi 10.0.1.133 -trace_stat";
-                if (!process.Start()) throw new InvalidOperationException("Failed to start sipp process");
-                Session session=new Session() { ScenarioName = ScenarioName, PID = process.Id };
-                File.Create(Path.Combine(sessionsFolder, $"{session.ScenarioName}_{session.PID}"));
+            Log(LogLevel.Information, $"Start session for scenario {ScenarioName} in folder {sippFolder}");
 
-                return session;
-            }
-            );
+            return Try<Session>(()=>RunSession(ScenarioName));
+
         }
-       
 
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data!=null) Log(LogLevel.Debug, e.Data);
 
-       
+        }
+        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null) Log(LogLevel.Error, e.Data);
 
+        }
 
     }
 }

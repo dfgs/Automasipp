@@ -1,6 +1,7 @@
 ﻿using Automasipp.Desktop.ViewModels;
 using Automasipp.Models;
 using RestSharp;
+using ResultTypeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,14 @@ namespace Automasipp.Desktop.Pages
 {
     public class SessionsPage : RESTPage
     {
+        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(Session), typeof(SessionsPage), new PropertyMetadata(null));
+        public Session SelectedItem
+        {
+            get { return (Session)GetValue(SelectedItemProperty); }
+            set { SetValue(SelectedItemProperty, value); }
+        }
+
+
 
         public static readonly DependencyProperty NamesProperty = DependencyProperty.Register("Items", typeof(List<Session>), typeof(SessionsPage), new PropertyMetadata(null));
         public List<Session> Items
@@ -30,16 +39,20 @@ namespace Automasipp.Desktop.Pages
             this.scenarioName = ScenarioName;
 
         }
-
-
-        protected override async Task OnLoadAsync()
+        protected override async Task<IResult<bool>> OnLoadAsync()
         {
-            if (PageManager == null) return;
+            if (PageManager == null) return Result.Fail<bool>(new ArgumentException("Page manager is not defined"));
 
-            //await Task.Delay(10000);
-            Session[] response = await GetAsync<Session[]>($"Session/{scenarioName}");
-            Items = new List<Session>(response);
+            
+            IResult<Session[]> response = await GetAsync<Session[]>($"Session/{scenarioName}");
+            return response.SelectResult((items) =>
+            {
+                Items = new List<Session>(items);
+                return Result.Success(true);
+            }, (ex) => ex);
+
         }
+
 
        
 

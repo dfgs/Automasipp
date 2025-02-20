@@ -31,6 +31,19 @@ namespace Automasipp.backend.DataSources
             }
 
         }
+        public async Task<IResult<T>> TryAsync<T>(Task<T> Task)
+        {
+            try
+            {
+                T value = await Task;
+                return Result.Success(value);
+            }
+            catch (Exception ex)
+            {
+                Log(LogLevel.Error, $"Operation failure ({ex.Message})", ex);
+                return Result.Fail<T>(ex);
+            }
 
+        }
     }
 }

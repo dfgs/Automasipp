@@ -71,12 +71,12 @@ namespace Automasipp.Desktop
 
         }
 
-        protected abstract Task OnLoadAsync();
+        protected abstract Task<IResult<bool>> OnLoadAsync();
 
 
         public async Task<IResult<bool>> LoadAsync()
         {
-            return await RunAsync(OnLoadAsync());
+            return await OnLoadAsync();
         }
 
         public virtual async Task<IResult<bool>> CloseAsync()

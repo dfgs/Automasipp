@@ -19,6 +19,9 @@
 		<DataTemplate DataType="{x:Type pages:ScenarioPage}">
 			<views:ScenarioView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type pages:SessionsPage}">
+			<views:SessionsView/>
+		</DataTemplate>
 	</UserControl.Resources>
 	
 	<DockPanel>

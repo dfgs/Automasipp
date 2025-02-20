@@ -1,11 +1,15 @@
 ﻿using Automasipp.Desktop.ViewModels;
+using Automasipp.Models;
 using RestSharp;
+using ResultTypeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Session = Automasipp.Models.Session;
 
 namespace Automasipp.Desktop.Pages
 {
@@ -33,12 +37,6 @@ namespace Automasipp.Desktop.Pages
 
 
 
-        public static readonly DependencyProperty OpenSessionsCommandProperty = DependencyProperty.Register("OpenSessionsCommand", typeof(PageCommand), typeof(ScenariosPage), new PropertyMetadata(null));
-        public PageCommand OpenSessionsCommand
-        {
-            get { return (PageCommand)GetValue(OpenSessionsCommandProperty); }
-            set { SetValue(OpenSessionsCommandProperty, value); }
-        }
         public static readonly DependencyProperty OpenScenarioCommandProperty = DependencyProperty.Register("OpenScenarioCommand", typeof(PageCommand), typeof(ScenariosPage), new PropertyMetadata(null));
         public PageCommand OpenScenarioCommand
         {
@@ -46,6 +44,19 @@ namespace Automasipp.Desktop.Pages
             set { SetValue(OpenScenarioCommandProperty, value); }
         }
 
+        public static readonly DependencyProperty StartSessionCommandProperty = DependencyProperty.Register("StartSessionCommand", typeof(PageCommand), typeof(ScenariosPage), new PropertyMetadata(null));
+        public PageCommand StartSessionCommand
+        {
+            get { return (PageCommand)GetValue(StartSessionCommandProperty); }
+            set { SetValue(StartSessionCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty OpenSessionsCommandProperty = DependencyProperty.Register("OpenSessionsCommand", typeof(PageCommand), typeof(ScenariosPage), new PropertyMetadata(null));
+        public PageCommand OpenSessionsCommand
+        {
+            get { return (PageCommand)GetValue(OpenSessionsCommandProperty); }
+            set { SetValue(OpenSessionsCommandProperty, value); }
+        }
 
 
 
@@ -54,26 +65,23 @@ namespace Automasipp.Desktop.Pages
         public ScenariosPage():base()
         {
             OpenScenarioCommand = new PageCommand(this, (_) => SelectedItem != null, (parameter) => OpenScenarioAsync());
-            OpenSessionsCommand = new PageCommand(this,(_) => SelectedItem != null, (_) => OpenSessionAsync());
+            OpenSessionsCommand = new PageCommand(this, (_) => SelectedItem != null, (_) => OpenSessionsAsync());
+            StartSessionCommand = new PageCommand(this, (_) => SelectedItem != null, (_) => StartSessionAsync());
         }
 
 
-        protected override async Task OnLoadAsync()
+        protected override async Task<IResult<bool>> OnLoadAsync()
         {
-            if (PageManager == null) return;
+            if (PageManager == null) return Result.Fail<bool>(new ArgumentException("Page manager is not defined"));
 
             //await Task.Delay(10000);
-            string[] response = await GetAsync<string[]>("Scenario/names");
-            Items = new List<ScenarioLink>(response.Select(item=> new ScenarioLink(PageManager,this) { ScenarioName=item}));
-        }
-        private async Task OpenSessionAsync()
-        {
-            SessionsPage sessionsPage;
-
-            if (PageManager == null) return;
-
-            sessionsPage = new SessionsPage(SelectedItem.ScenarioName);
-            await PageManager.OpenPageAsync(sessionsPage);
+            IResult<string[]> response = await GetAsync<string[]>("Scenario/names");
+            return response.SelectResult((items) =>
+            {
+                Items = new List<ScenarioLink>(items.Select(item => new ScenarioLink(PageManager, this) { ScenarioName = item }));
+                return Result.Success(true);
+            }, (ex) => ex);
+            
         }
         private async Task OpenScenarioAsync()
         {
@@ -84,6 +92,40 @@ namespace Automasipp.Desktop.Pages
             scenarioPage = new ScenarioPage(SelectedItem.ScenarioName);
             await PageManager.OpenPageAsync(scenarioPage);
         }
+
+        private async Task OpenSessionsAsync()
+        {
+            SessionsPage sessionsPage;
+
+            if (PageManager == null) return;
+
+            sessionsPage = new SessionsPage(SelectedItem.ScenarioName);
+            await PageManager.OpenPageAsync(sessionsPage);
+        }
+
+
+        private async Task StartSessionAsync()
+        {
+            SessionsPage sessionsPage;
+            IResult<Session> result;
+
+            if (PageManager == null) return;
+
+            
+            result=await PostAsync<Session>($"Session/{SelectedItem.ScenarioName}");
+            if (!result.Succeeded())
+            {
+                ErrorMessage = "Cannot start session";
+                return;
+            }
+                
+
+            sessionsPage = new SessionsPage(SelectedItem.ScenarioName);
+            await PageManager.OpenPageAsync(sessionsPage);
+        }
+
+
+
 
     }
 }

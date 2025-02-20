@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Automasipp.Desktop.Views.ScenariosView"
+﻿<UserControl x:Class="Automasipp.Desktop.Views.SessionsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,11 +10,11 @@
 	<DockPanel>
 		<ToolBarTray DockPanel.Dock="Top">
 			<ToolBar>
-				<Button Command="{Binding OpenScenarioCommand}" Content="Open scenario" />
+				<Button Command="{Binding OpenSessionsCommand}" Content="/" />
+				<Button Command="{Binding OpenScenarioCommand}" Content="/" />
 			</ToolBar>
 			<ToolBar>
-				<Button Command="{Binding OpenSessionsCommand}" Content="Open sessions" />
-				<Button Command="{Binding StartSessionCommand}" Content="Start session" />
+
 			</ToolBar>
 		</ToolBarTray>
 
@@ -22,11 +22,11 @@
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="Name" Width="500" DisplayMemberBinding="{Binding ScenarioName}"/>
+					<GridViewColumn Header="PID" Width="100" DisplayMemberBinding="{Binding PID}"/>
 
 				</GridView>
 			</ListView.View>
 
 		</ListView>
 	</DockPanel>
-   
 </UserControl>

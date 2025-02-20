@@ -1,5 +1,6 @@
 using Automasipp.backend.DataSources;
 using Automasipp.Backend;
+using Automasipp.Backend.DataSources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using NReco.Logging.File;
@@ -31,11 +32,12 @@ builder.Services.AddSwaggerGen();
 string scenariosFolder = builder.Configuration.GetValue<string>("ScenariosFolder") ?? "/opt/sipp/Scenarios";
 string sippFolder = builder.Configuration.GetValue<string>("SippFolder") ?? "/opt/sipp";
 string sessionsFolder = builder.Configuration.GetValue<string>("SessionsFolder") ?? "/opt/sipp/Sessions";
-string reportsFolder = builder.Configuration.GetValue<string>("ReportsFolder") ?? "/opt/sipp/Reports";
+string reportsFolder = builder.Configuration.GetValue<string>("ReportsFolder") ?? "/opt/sipp/Scenarios";
 
 
 builder.Services.AddSingleton<IScenarioDataSource, ScenarioDataSource>((serviceProvider) => new ScenarioDataSource(builder.CreateLogger<ScenarioDataSource>(), scenariosFolder));
-builder.Services.AddSingleton<ISessionDataSource, SessionDataSource>((serviceProvider) => new SessionDataSource(builder.CreateLogger<SessionDataSource>(), sippFolder,sessionsFolder, scenariosFolder,reportsFolder));
+builder.Services.AddSingleton<ISessionDataSource, SessionDataSource>((serviceProvider) => new SessionDataSource(builder.CreateLogger<SessionDataSource>(), sippFolder, sessionsFolder, scenariosFolder, reportsFolder));
+builder.Services.AddSingleton<IReportDataSource, ReportDataSource>((serviceProvider) => new ReportDataSource(builder.CreateLogger<ReportDataSource>(), new ReportDeserializer(), reportsFolder));
 
 
 var app = builder.Build();

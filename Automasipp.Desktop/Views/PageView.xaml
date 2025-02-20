@@ -22,6 +22,9 @@
 		<DataTemplate DataType="{x:Type pages:SessionsPage}">
 			<views:SessionsView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type pages:ReportsPage}">
+			<views:ReportsView/>
+		</DataTemplate>
 	</UserControl.Resources>
 	
 	<DockPanel>

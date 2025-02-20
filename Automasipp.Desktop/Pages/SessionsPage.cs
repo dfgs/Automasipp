@@ -22,11 +22,21 @@ namespace Automasipp.Desktop.Pages
 
 
 
-        public static readonly DependencyProperty NamesProperty = DependencyProperty.Register("Items", typeof(List<Session>), typeof(SessionsPage), new PropertyMetadata(null));
+        public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register("Items", typeof(List<Session>), typeof(SessionsPage), new PropertyMetadata(null));
         public List<Session> Items
         {
-            get { return (List<Session>)GetValue(NamesProperty); }
-            private set { SetValue(NamesProperty, value); }
+            get { return (List<Session>)GetValue(ItemsProperty); }
+            private set { SetValue(ItemsProperty, value); }
+        }
+
+
+
+
+        public static readonly DependencyProperty OpenReportsCommandProperty = DependencyProperty.Register("OpenReportsCommand", typeof(PageCommand), typeof(SessionsPage), new PropertyMetadata(null));
+        public PageCommand OpenReportsCommand
+        {
+            get { return (PageCommand)GetValue(OpenReportsCommandProperty); }
+            set { SetValue(OpenReportsCommandProperty, value); }
         }
 
 
@@ -37,6 +47,7 @@ namespace Automasipp.Desktop.Pages
         public SessionsPage(string ScenarioName) : base()
         {
             this.scenarioName = ScenarioName;
+            OpenReportsCommand = new PageCommand(this, (_) => SelectedItem != null, (_) => OpenReportsAsync());
 
         }
         protected override async Task<bool> OnLoadAsync()
@@ -48,8 +59,16 @@ namespace Automasipp.Desktop.Pages
             return response.Match((items) => Items = new List<Session>(items), (ex) => throw ex);
         }
 
+        private async Task OpenReportsAsync()
+        {
+            ReportsPage reportsPage;
 
-       
+            if (PageManager == null) return;
+
+            reportsPage = new ReportsPage(SelectedItem.ScenarioName,SelectedItem.PID);
+            await PageManager.OpenPageAsync(reportsPage);
+        }
+
 
     }
 }

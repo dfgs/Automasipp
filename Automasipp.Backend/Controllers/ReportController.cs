@@ -31,7 +31,7 @@ namespace Automasipp.backend.Controllers
         }
 
        
-        [HttpGet("{ScenarioName}")]
+        [HttpGet("{ScenarioName}/{PID}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

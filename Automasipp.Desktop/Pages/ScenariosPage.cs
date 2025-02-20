@@ -28,11 +28,11 @@ namespace Automasipp.Desktop.Pages
 
 
 
-        public static readonly DependencyProperty NamesProperty = DependencyProperty.Register("Items", typeof(List<ScenarioLink>), typeof(ScenariosPage), new PropertyMetadata(null));
+        public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register("Items", typeof(List<ScenarioLink>), typeof(ScenariosPage), new PropertyMetadata(null));
         public List<ScenarioLink> Items
         {
-            get { return (List<ScenarioLink>)GetValue(NamesProperty); }
-            private set { SetValue(NamesProperty, value); }
+            get { return (List<ScenarioLink>)GetValue(ItemsProperty); }
+            private set { SetValue(ItemsProperty, value); }
         }
 
 

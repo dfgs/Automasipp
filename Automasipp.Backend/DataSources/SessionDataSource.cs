@@ -82,7 +82,7 @@ namespace Automasipp.backend.DataSources
 
             // -bg run in background => pid is incorrect when using this option
             // -stf define report file name 
-            process.StartInfo.Arguments = $"10.0.1.11 -s 1001 -sf {scenariosFolder}/{ScenarioName}.xml -l 1 -m 1 -mi 10.0.1.133 -trace_stat";
+            process.StartInfo.Arguments = $"10.0.1.11 -s 1001 -sf {scenariosFolder}/{ScenarioName}.xml -l 1 -m 1 -mi 10.0.1.133 -trace_stat -stf report.csv";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             process.StartInfo.UseShellExecute = false;

@@ -26,35 +26,51 @@
 		</DataTemplate>
 	</UserControl.Resources>
 
-	<StackPanel>
-		<StackPanel DataContext="{Binding Scenario}">
-			<TextBlock Text="{Binding Name,FallbackValue=Name}" FontSize="24"/>
-			<TextBlock Text="Name:" FontWeight="Bold"/>
-			<TextBox Margin="5" Text="{Binding Name}" />
-			<TextBlock Text="Commands:" FontWeight="Bold"/>
-			<ListBox Margin="5" ItemsSource="{Binding Commands}" Height="150">
-				<ListBox.Resources>
-					<ResourceDictionary>
-						<DataTemplate DataType="{x:Type models:SendCommand}">
-							<views:CommandView Text="Send" ArrowOrientation="Right"/>
-						</DataTemplate>
+	<DockPanel>
+		<ToolBarTray DockPanel.Dock="Top">
+			<ToolBar>
+				<Button Command="{Binding RefreshCommand}" Content="Refresh" />
+			</ToolBar>
+			<ToolBar>
+				<Button Command="{Binding OpenScenarioCommand}" Content="Open scenario" />
+			</ToolBar>
+			<ToolBar>
+				<Button Command="{Binding OpenSessionsCommand}" Content="Open sessions" />
+				<Button Command="{Binding StartSessionCommand}" Content="Start session" />
+			</ToolBar>
+		</ToolBarTray>
 
-						<DataTemplate DataType="{x:Type models:ReceiveCommand}">
-							<views:CommandView Text="{Binding ResponseCode}" ArrowOrientation="Left"/>
-						</DataTemplate>
+		<StackPanel>
+			<StackPanel DataContext="{Binding Scenario}">
+				<TextBlock Text="{Binding Name,FallbackValue=Name}" FontSize="24"/>
+				<TextBlock Text="Name:" FontWeight="Bold"/>
+				<TextBox Margin="5" Text="{Binding Name}" />
+				<TextBlock Text="Commands:" FontWeight="Bold"/>
+				<ListBox Margin="5" ItemsSource="{Binding Commands}" Height="150">
+					<ListBox.Resources>
+						<ResourceDictionary>
+							<DataTemplate DataType="{x:Type models:SendCommand}">
+								<views:CommandView Text="Send" ArrowOrientation="Right"/>
+							</DataTemplate>
 
-					</ResourceDictionary>
-				</ListBox.Resources>
-				<ListBox.ItemContainerStyle>
-					<Style TargetType="{x:Type ListBoxItem}">
-						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-					</Style>
-				</ListBox.ItemContainerStyle>
-			</ListBox>
+							<DataTemplate DataType="{x:Type models:ReceiveCommand}">
+								<views:CommandView Text="{Binding ResponseCode}" ArrowOrientation="Left"/>
+							</DataTemplate>
+
+						</ResourceDictionary>
+					</ListBox.Resources>
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="{x:Type ListBoxItem}">
+							<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+						</Style>
+					</ListBox.ItemContainerStyle>
+				</ListBox>
+			</StackPanel>
+			<UniformGrid Columns="2" >
+				<Button Content="Save" Width="150" Command="{Binding SaveCommand}"/>
+				<Button Content="Close" Width="150" Command="{Binding CloseCommand}"/>
+			</UniformGrid>
 		</StackPanel>
-		<UniformGrid Columns="2" >
-			<Button Content="Save" Width="150" Command="{Binding SaveCommand}"/>
-			<Button Content="Close" Width="150" Command="{Binding CloseCommand}"/>
-		</UniformGrid>
-	</StackPanel>
+	</DockPanel>
+
 </UserControl>

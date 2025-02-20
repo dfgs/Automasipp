@@ -12,13 +12,18 @@ namespace Automasipp.Desktop
     public abstract class Page : DependencyObject, IPage
     {
 
+        public static readonly DependencyProperty RefreshCommandProperty = DependencyProperty.Register("RefreshCommand", typeof(PageCommand), typeof(Page), new PropertyMetadata(null));
+        public PageCommand RefreshCommand
+        {
+            get { return (PageCommand)GetValue(RefreshCommandProperty); }
+            set { SetValue(RefreshCommandProperty, value); }
+        }
         public static readonly DependencyProperty CloseCommandProperty = DependencyProperty.Register("CloseCommand", typeof(PageCommand), typeof(Page), new PropertyMetadata(null));
         public PageCommand CloseCommand
         {
             get { return (PageCommand)GetValue(CloseCommandProperty); }
             set { SetValue(CloseCommandProperty, value); }
         }
-
         public static readonly DependencyProperty FocusCommandProperty = DependencyProperty.Register("FocusCommand", typeof(PageCommand), typeof(Page), new PropertyMetadata(null));
         public PageCommand FocusCommand
         {
@@ -66,17 +71,18 @@ namespace Automasipp.Desktop
 
         public Page()
         {
-            this.CloseCommand = new PageCommand(this, (parameter) => OnCanClose(parameter), (parameter) => CloseCommandExecutedAsync());
+            this.RefreshCommand = new PageCommand(this, (parameter) => (State==PageState.Loaded), (parameter) => LoadAsync());
+            this.CloseCommand = new PageCommand(this, (parameter) => (State == PageState.Loaded) && OnCanClose(parameter), (parameter) => CloseCommandExecutedAsync());
             this.FocusCommand = new PageCommand(this, (parameter) => true, (parameter) => FocusCommandExecutedAsync());
 
         }
 
-        protected abstract Task<IResult<bool>> OnLoadAsync();
+        protected abstract Task<bool> OnLoadAsync();
 
 
         public async Task<IResult<bool>> LoadAsync()
         {
-            return await OnLoadAsync();
+            return await RunAsync(OnLoadAsync());
         }
 
         public virtual async Task<IResult<bool>> CloseAsync()

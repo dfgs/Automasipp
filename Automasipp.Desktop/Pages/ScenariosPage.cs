@@ -70,19 +70,14 @@ namespace Automasipp.Desktop.Pages
         }
 
 
-        protected override async Task<IResult<bool>> OnLoadAsync()
+        protected override async Task<bool> OnLoadAsync()
         {
-            if (PageManager == null) return Result.Fail<bool>(new ArgumentException("Page manager is not defined"));
+            if (PageManager == null) throw new ArgumentException("Page manager is not defined");
 
-            //await Task.Delay(10000);
             IResult<string[]> response = await GetAsync<string[]>("Scenario/names");
-            return response.SelectResult((items) =>
-            {
-                Items = new List<ScenarioLink>(items.Select(item => new ScenarioLink(PageManager, this) { ScenarioName = item }));
-                return Result.Success(true);
-            }, (ex) => ex);
-            
+            return response.Match((items) => Items = new List<ScenarioLink>(items.Select(item => new ScenarioLink(PageManager, this) { ScenarioName = item })), (ex) => throw ex);
         }
+
         private async Task OpenScenarioAsync()
         {
             ScenarioPage scenarioPage;

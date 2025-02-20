@@ -19,6 +19,13 @@ namespace Automasipp.Models
             set;
         }
 
+        [XmlAttribute()]
+        public bool IsRunning
+        {
+            get;
+            set;
+        }
+
         public Session()
         {
             

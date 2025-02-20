@@ -41,21 +41,15 @@ namespace Automasipp.Desktop.Pages
 
             this.SaveCommand = new PageCommand(this, (_) => true, (_) => SaveCommandExecutedAsync());
         }
-        protected override async Task<IResult<bool>> OnLoadAsync()
+        protected override async Task<bool> OnLoadAsync()
         {
-            if (PageManager == null) return Result.Fail<bool>(new ArgumentException("Page manager is not defined"));
+            if (PageManager == null) throw new ArgumentException("Page manager is not defined");
 
-            //await Task.Delay(10000);
             IResult<Scenario> response = await GetAsync<Scenario>($"Scenario/{scenarioName}");
-            return response.SelectResult((scenario) =>
-            {
-                this.Scenario = scenario;
-                return Result.Success(true);
-            }, (ex) => ex);
-
+            return response.Match((scenario) => this.Scenario = scenario, (ex) => throw ex);
         }
 
-        
+
         private async Task SaveCommandExecutedAsync()
         {
             await  PutAsync<bool>($"Scenario/{scenarioName}", Scenario);

@@ -75,25 +75,12 @@ namespace Automasipp.backend.Controllers
         //[ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<Session> StartSession(string ScenarioName, [FromServices] IServiceScopeFactory serviceScopeFactory)
+        public ActionResult<Session> StartSession(string ScenarioName)
         {
-            IResult<Session>? result=null;
 
             if (ScenarioName == null) return this.CreateErrorAction<Session>(LogLevel.Error, "Scenario name must be provided", (m) => this.BadRequest(m));
 
-            /*Task.Run(async () =>
-            {
-                await using (var scope = serviceScopeFactory.CreateAsyncScope())
-                {
-                    result=await dataSource.StartSessionAsync(ScenarioName);
-                }
-            });
-            if (result==null) return this.CreateErrorAction<Session>(LogLevel.Error, "Failed to run async task", (m) => this.BadRequest(m));
-            //*/
-
-            result=dataSource.StartSession(ScenarioName);
-
-            return result.SelectActionResult(
+            return dataSource.StartSession(ScenarioName).SelectActionResult(
                 (item) => Ok(item),
                 (ex) =>
                 {

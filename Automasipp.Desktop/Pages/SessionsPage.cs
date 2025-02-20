@@ -39,18 +39,13 @@ namespace Automasipp.Desktop.Pages
             this.scenarioName = ScenarioName;
 
         }
-        protected override async Task<IResult<bool>> OnLoadAsync()
+        protected override async Task<bool> OnLoadAsync()
         {
-            if (PageManager == null) return Result.Fail<bool>(new ArgumentException("Page manager is not defined"));
+            if (PageManager == null) throw new ArgumentException("Page manager is not defined");
 
             
             IResult<Session[]> response = await GetAsync<Session[]>($"Session/{scenarioName}");
-            return response.SelectResult((items) =>
-            {
-                Items = new List<Session>(items);
-                return Result.Success(true);
-            }, (ex) => ex);
-
+            return response.Match((items) => Items = new List<Session>(items), (ex) => throw ex);
         }
 
 

@@ -10,6 +10,9 @@
 	<DockPanel>
 		<ToolBarTray DockPanel.Dock="Top">
 			<ToolBar>
+				<Button Command="{Binding RefreshCommand}" Content="Refresh" />
+			</ToolBar>
+			<ToolBar>
 				<Button Command="{Binding OpenScenarioCommand}" Content="Open scenario" />
 			</ToolBar>
 			<ToolBar>

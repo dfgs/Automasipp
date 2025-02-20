@@ -25,7 +25,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 #pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
-            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(null, "invalidfolder", "invalidfolder", "invalidfolder"));
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(null, "invalidfolder", "invalidfolder", "invalidfolder", "invalidfolder"));
 #pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
         }
         [TestMethod]
@@ -35,7 +35,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 #pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
-            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, null, "invalidfolder", "invalidfolder"));
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, null, "invalidfolder", "invalidfolder", "invalidfolder"));
 #pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
         }
         [TestMethod]
@@ -45,7 +45,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 #pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
-            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", null, "invalidfolder"));
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", null, "invalidfolder", "invalidfolder"));
 #pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
 
 
@@ -57,7 +57,17 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 #pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
-            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", "invalidfolder", null));
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", "invalidfolder", null, "invalidfolder"));
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+        }
+        [TestMethod]
+        public void ConstructorShouldFailAndLogErrorIfReportsFolderIsNull()
+        {
+            ILogger logger;
+
+            logger = Mock.Of<ILogger>();
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            Assert.ThrowsException<ArgumentNullException>(() => new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder", null));
 #pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
         }
         #endregion
@@ -73,7 +83,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 
-            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder");
+            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder", "invalidfolder");
 
             Assert.ThrowsException<FormatException>(() => dataSource.CreateSessionFromFileName("invalidFileName"));
         }
@@ -86,7 +96,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 
-            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder");
+            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder", "invalidfolder");
 
 #pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
             Assert.ThrowsException<ArgumentNullException>(() => dataSource.CreateSessionFromFileName(null));
@@ -102,15 +112,17 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 
-            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder");
+            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder", "invalidfolder");
 
             session = dataSource.CreateSessionFromFileName(@"c:\folder1\demo1_1234.session");
             Assert.AreEqual("demo1", session.ScenarioName);
             Assert.AreEqual(1234, session.PID);
-           
+            Assert.IsFalse(session.IsRunning);
+
             session = dataSource.CreateSessionFromFileName(@"c:\folder1\Folder 2\demo_test_1234.session");
             Assert.AreEqual("demo_test", session.ScenarioName);
             Assert.AreEqual(1234, session.PID);
+            Assert.IsFalse(session.IsRunning);
 
         }
         #endregion
@@ -129,7 +141,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
             Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
 
 
-            dataSource =new SessionDataSource(logger,"invalidfolder","invalidfolder","invalidfolder");
+            dataSource =new SessionDataSource(logger,"invalidfolder","invalidfolder","invalidfolder", "invalidfolder");
 
             result=dataSource.GetSessions();
 
@@ -152,7 +164,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 
-            dataSource = new SessionDataSource(logger,"invalidfolder", @".\Sessions","invalidfolder");
+            dataSource = new SessionDataSource(logger,"invalidfolder", @".\Sessions","invalidfolder", "invalidfolder");
 
             result = dataSource.GetSessions();
 
@@ -178,7 +190,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 
-            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder");
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder", "invalidfolder");
 
             result = dataSource.GetSessions("demo1");
 
@@ -203,7 +215,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
 
             logger = Mock.Of<ILogger>();
 
-            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder");
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder", "invalidfolder");
 
             result = dataSource.GetSessions("demo2");
 
@@ -228,7 +240,7 @@ namespace Automasipp.Backend.UnitTests.DataSources
             logger = Mock.Of<ILogger>();
             Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
 
-            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder");
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder", "invalidfolder");
 
 #pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
             result = dataSource.GetSessions(null);

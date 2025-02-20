@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ResultTypeLib;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -18,15 +19,19 @@ namespace Automasipp.backend.DataSources
         private string sessionsFolder;
         private string sippFolder;
         private string scenariosFolder;
-        public SessionDataSource(ILogger Logger,string SippFolder, string SessionsFolder, string ScenariosFolder) :base(Logger) 
+        private string reportsFolder;
+
+        public SessionDataSource(ILogger Logger,string SippFolder, string SessionsFolder, string ScenariosFolder,string ReportsFolder) :base(Logger) 
         {
             if (Logger == null) throw new ArgumentNullException(nameof(Logger));
             if (SessionsFolder == null) throw new ArgumentNullException(nameof(SessionsFolder));
             if (SippFolder == null) throw new ArgumentNullException(nameof(SippFolder));
             if (ScenariosFolder == null) throw new ArgumentNullException(nameof(ScenariosFolder));
+            if (ReportsFolder == null) throw new ArgumentNullException(nameof(ReportsFolder));
             this.sippFolder= SippFolder;    
             this.sessionsFolder = SessionsFolder;
             this.scenariosFolder = ScenariosFolder;
+            this.reportsFolder = ReportsFolder;
         }
 
 
@@ -45,14 +50,29 @@ namespace Automasipp.backend.DataSources
 
         public Session CreateSessionFromFileName(string FullPath)
         {
+            int pid;
+            bool isRunning=false;
+
             if (FullPath == null) throw new ArgumentNullException(nameof(FullPath));
 
             string fileName = Path.GetFileNameWithoutExtension(FullPath);
             Match match=sessionRegex.Match(fileName);
 
             if (!match.Success) throw new FormatException($"Invalid session file name: {fileName}");
+            
+            pid = int.Parse(match.Groups["PID"].Value);
+            try
+            {
+                Process process=Process.GetProcessById(pid);
+                isRunning = true;
+            }
+            catch
+            {
+                isRunning = false;
+            }
 
-            return new Session() { ScenarioName = match.Groups["ScenarioName"].Value , PID = int.Parse(match.Groups["PID"].Value) };
+
+            return new Session() { ScenarioName = match.Groups["ScenarioName"].Value , PID= pid,IsRunning=isRunning };
         }
         
         private Process CreateProcess(string ScenarioName)
@@ -61,6 +81,7 @@ namespace Automasipp.backend.DataSources
             process.StartInfo.FileName = Path.Combine(sippFolder, "sipp");
 
             // -bg run in background => pid is incorrect when using this option
+            // -stf define report file name 
             process.StartInfo.Arguments = $"10.0.1.11 -s 1001 -sf {scenariosFolder}/{ScenarioName}.xml -l 1 -m 1 -mi 10.0.1.133 -trace_stat";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -104,7 +125,7 @@ namespace Automasipp.backend.DataSources
                 if (process.ExitCode < 0) throw new InvalidOperationException($"Process exited with result {process.ExitCode}");
             }
 
-            Session session = new Session() { ScenarioName = ScenarioName, PID = process.Id };
+            Session session = new Session() { ScenarioName = ScenarioName, PID = process.Id ,IsRunning=true};
             System.IO.File.Create(Path.Combine(sessionsFolder, $"{session.ScenarioName}_{session.PID}.session"));
 
             return session;

@@ -56,10 +56,10 @@ namespace Automasipp.Desktop.Pages
             ConnectCommand=new PageCommand(this,(_)=>true,(_) => ConnectCommandExecutedAsync());
         }
 
-        protected override async Task<IResult<bool>> OnLoadAsync()
+        protected override async Task<bool> OnLoadAsync()
         {
             await Task.Yield();
-            return Result.Success(true);
+            return true;
         }
 
         private async Task ConnectCommandExecutedAsync()

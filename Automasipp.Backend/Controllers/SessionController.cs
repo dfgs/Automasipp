@@ -94,7 +94,28 @@ namespace Automasipp.backend.Controllers
             );
         }//*/
 
-        
+        [HttpDelete("{ScenarioName}/{PID}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<bool> DeleteSession(string ScenarioName,int PID)
+        {
+            if (ScenarioName == null) return this.CreateErrorAction<bool>(LogLevel.Error, "Scenario name must be provided", (m) => this.BadRequest(m));
+
+            return dataSource.DeleteSession(ScenarioName,PID).SelectActionResult(
+                (item) => Ok(item),
+                (ex) =>
+                {
+                    switch (ex)
+                    {
+                        case DirectoryNotFoundException: return this.CreateErrorAction<bool>(LogLevel.Warning, $"Session folder was not found", (m) => this.NotFound(m));
+                        case FileNotFoundException: return this.CreateErrorAction<bool>(LogLevel.Warning, $"Session file was not found", (m) => this.NotFound(m));
+                        default: return this.CreateErrorAction<bool>(LogLevel.Error, "An internal server error occured", (m) => new InternalServerError(m)); ;
+                    }
+                }
+            );
+        }//*/
 
     }
 }

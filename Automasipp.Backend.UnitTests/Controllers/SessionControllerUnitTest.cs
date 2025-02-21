@@ -14,7 +14,7 @@ using ResultTypeLib;
 namespace Automasipp.Backend.UnitTests.Controllers
 {
     [TestClass]
-    public class SessionDataSourceUnitTest
+    public class SessionControllerUnitTest
     {
 
         #region GetSessions using scenario name
@@ -290,6 +290,142 @@ namespace Automasipp.Backend.UnitTests.Controllers
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(value);
             Assert.AreEqual(1234, value.PID);
+        }
+        #endregion
+
+        #region DeleteSession
+
+        [TestMethod]
+        public void DeleteSessionShouldReturnCode404IfDirectoryIsNotFound()
+        {
+            ILogger<SessionController> logger;
+            ISessionDataSource dataSource;
+            SessionController controller;
+            ActionResult<bool> result;
+            NotFoundObjectResult? koResult;
+
+            logger = Mock.Of<ILogger<SessionController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<ISessionDataSource>();
+            Mock.Get(dataSource).Setup(m => m.DeleteSession(It.IsAny<string>(), It.IsAny<int>())).Returns(Result.Fail<bool>(new DirectoryNotFoundException("error content")));
+
+            controller = new SessionController(logger, dataSource);
+
+            result = controller.DeleteSession("anyname",124);
+            koResult = result.Result as NotFoundObjectResult;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Assert.AreEqual("Session folder was not found", koResult.Value);
+            Mock.VerifyAll();
+        }
+        [TestMethod]
+        public void DeleteSessionShouldReturnCode404IfFileIsNotFound()
+        {
+            ILogger<SessionController> logger;
+            ISessionDataSource dataSource;
+            SessionController controller;
+            ActionResult<bool> result;
+            NotFoundObjectResult? koResult;
+
+            logger = Mock.Of<ILogger<SessionController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<ISessionDataSource>();
+            Mock.Get(dataSource).Setup(m => m.DeleteSession(It.IsAny<string>(), It.IsAny<int>())).Returns(Result.Fail<bool>(new FileNotFoundException("error content")));
+
+            controller = new SessionController(logger, dataSource);
+
+            result = controller.DeleteSession("anyname", 124);
+            koResult = result.Result as NotFoundObjectResult;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Assert.AreEqual("Session file was not found", koResult.Value);
+            Mock.VerifyAll();
+        }
+
+        [TestMethod]
+        public void DeleteSessionShouldReturnCode400IfScenarioNameIsNotProvided()
+        {
+            ILogger<SessionController> logger;
+            ISessionDataSource dataSource;
+            SessionController controller;
+            ActionResult<bool> result;
+            BadRequestObjectResult? koResult;
+
+            logger = Mock.Of<ILogger<SessionController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<ISessionDataSource>();
+            Mock.Get(dataSource).Setup(m => m.DeleteSession(It.IsAny<string>(), It.IsAny<int>())).Returns(Result.Fail<bool>(new FileNotFoundException("error content")));
+
+            controller = new SessionController(logger, dataSource);
+
+#pragma warning disable CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            result = controller.DeleteSession(null,1234);
+#pragma warning restore CS8625 // Impossible de convertir un littéral ayant une valeur null en type référence non-nullable.
+            koResult = result.Result as BadRequestObjectResult;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Assert.AreEqual("Scenario name must be provided", koResult.Value);
+            Mock.VerifyAll();
+        }
+
+        [TestMethod]
+        public void DeleteSessionShouldReturnCode500IfDataSourceFails()
+        {
+            ILogger<SessionController> logger;
+            ISessionDataSource dataSource;
+            SessionController controller;
+            ActionResult<bool> result;
+            InternalServerError? koResult;
+
+            logger = Mock.Of<ILogger<SessionController>>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+            dataSource = Mock.Of<ISessionDataSource>();
+            Mock.Get(dataSource).Setup(m => m.DeleteSession(It.IsAny<string>(), It.IsAny<int>())).Returns(Result.Fail<bool>(new InvalidOperationException("error content")));
+
+            controller = new SessionController(logger, dataSource);
+
+            result = controller.DeleteSession("anyname",1234);
+            koResult = result.Result as InternalServerError;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(koResult);
+            Mock.VerifyAll();
+        }
+
+
+        [TestMethod]
+        public void DeleteSessionShouldReturnCode200IfFilesExist()
+        {
+            ILogger<SessionController> logger;
+            ISessionDataSource dataSource;
+            SessionController controller;
+            ActionResult<bool> result;
+            OkObjectResult? okResult;
+            bool value;
+
+            logger = Mock.Of<ILogger<SessionController>>();
+            dataSource = Mock.Of<ISessionDataSource>();
+            Mock.Get(dataSource).Setup(m => m.DeleteSession(It.IsAny<string>(), It.IsAny<int>())).Returns(Result.Success(true));
+
+            controller = new SessionController(logger, dataSource);
+
+            result = controller.DeleteSession("test", 1234);
+            okResult = result.Result as OkObjectResult;
+
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            value = ((bool)okResult.Value);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsTrue(value);
         }
         #endregion
 

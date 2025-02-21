@@ -82,6 +82,7 @@ namespace Automasipp.Desktop
 
         public async Task<IResult<bool>> LoadAsync()
         {
+            ErrorMessage= null;
             return await RunAsync(OnLoadAsync());
         }
 

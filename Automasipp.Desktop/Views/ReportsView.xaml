@@ -21,9 +21,11 @@
 		<ListView ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}">
 			<ListView.View>
 				<GridView>
-					<GridViewColumn Header="Start time" Width="200" DisplayMemberBinding="{Binding StartTime}"/>
-					<GridViewColumn Header="Last reset time" Width="200" DisplayMemberBinding="{Binding LastResetTime}"/>
-					<GridViewColumn Header="Current time" Width="200" DisplayMemberBinding="{Binding CurrentTime}"/>
+					<GridViewColumn Header="Start time" Width="150" DisplayMemberBinding="{Binding StartTime}"/>
+					<GridViewColumn Header="Last reset time" Width="150" DisplayMemberBinding="{Binding LastResetTime}"/>
+					<GridViewColumn Header="Current time" Width="150" DisplayMemberBinding="{Binding CurrentTime}"/>
+					<GridViewColumn Header="Elapsed time (C)" Width="150" DisplayMemberBinding="{Binding ElapsedTime_Cumutated}"/>
+					<GridViewColumn Header="Call rate (C)" Width="150" DisplayMemberBinding="{Binding CallRate_Cumutated}"/>
 
 				</GridView>
 			</ListView.View>

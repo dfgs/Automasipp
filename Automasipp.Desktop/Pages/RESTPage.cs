@@ -82,6 +82,20 @@ namespace Automasipp.Desktop.Pages
                 , (ex) => ex);
 
         }
+        protected async Task<IResult<T>> DeleteAsync<T>(string Resource)
+        {
+            RestClient? client = PageManager?.GetPage<ConnectionPage>()?.Client;
+            if (client == null) throw new InvalidOperationException("Cannot get REST client");
 
+            RestRequest request = new RestRequest(Resource, Method.Delete);
+            request.RequestFormat = DataFormat.Xml;
+
+            IResult<T?> result = await RunAsync(client.DeleteAsync<T>(request));
+
+            return result.SelectResult((response) =>
+            response == null ? Result.Fail<T>(new InvalidOperationException("Result is null")) : Result.Success<T>(response)
+                , (ex) => ex);
+
+        }
     }
 }

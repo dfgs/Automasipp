@@ -8,5 +8,6 @@ namespace Automasipp.backend.DataSources
         IResult<Session[]> GetSessions();
         IResult<Session[]> GetSessions(string ScenarioName);
         IResult<Session> StartSession(string ScenarioName);
+        IResult<bool> DeleteSession(string ScenarioName,int PID);
     }
 }

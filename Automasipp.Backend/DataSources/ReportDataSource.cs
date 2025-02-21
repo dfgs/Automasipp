@@ -40,7 +40,7 @@ namespace Automasipp.backend.DataSources
             if (!Directory.Exists(reportsFolder)) throw new DirectoryNotFoundException($"Directory {reportsFolder} was not found");
 
             reports = new List<Report>();
-            using (FileStream stream = new FileStream(Path.Combine(reportsFolder, $"{ScenarioName}_{PID}.csv"),FileMode.Open))
+            using (FileStream stream = new FileStream(Path.Combine(reportsFolder, $"{ScenarioName}_{PID}_.csv"),FileMode.Open))
             {
                 StreamReader reader=new StreamReader(stream);
                 // skip first line

@@ -4,6 +4,7 @@ using RestSharp;
 using ResultTypeLib;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,10 +23,10 @@ namespace Automasipp.Desktop.Pages
 
 
 
-        public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register("Items", typeof(List<Session>), typeof(SessionsPage), new PropertyMetadata(null));
-        public List<Session> Items
+        public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register("Items", typeof(ObservableCollection<Session>), typeof(SessionsPage), new PropertyMetadata(null));
+        public ObservableCollection<Session> Items
         {
-            get { return (List<Session>)GetValue(ItemsProperty); }
+            get { return (ObservableCollection<Session>)GetValue(ItemsProperty); }
             private set { SetValue(ItemsProperty, value); }
         }
 
@@ -39,6 +40,12 @@ namespace Automasipp.Desktop.Pages
             set { SetValue(OpenReportsCommandProperty, value); }
         }
 
+        public static readonly DependencyProperty DeleteSessionCommandProperty = DependencyProperty.Register("DeleteSessionCommand", typeof(PageCommand), typeof(SessionsPage), new PropertyMetadata(null));
+        public PageCommand DeleteSessionCommand
+        {
+            get { return (PageCommand)GetValue(DeleteSessionCommandProperty); }
+            set { SetValue(DeleteSessionCommandProperty, value); }
+        }
 
 
         public override string Name => "Sessions";
@@ -48,6 +55,7 @@ namespace Automasipp.Desktop.Pages
         {
             this.scenarioName = ScenarioName;
             OpenReportsCommand = new PageCommand(this, (_) => SelectedItem != null, (_) => OpenReportsAsync());
+            DeleteSessionCommand = new PageCommand(this, (_) => SelectedItem != null, (_) => DeleteSessionAsync());
 
         }
         protected override async Task<bool> OnLoadAsync()
@@ -56,7 +64,7 @@ namespace Automasipp.Desktop.Pages
 
             
             IResult<Session[]> response = await GetAsync<Session[]>($"Session/{scenarioName}");
-            return response.Match((items) => Items = new List<Session>(items), (ex) => throw ex);
+            return response.Match((items) => Items = new ObservableCollection<Session>(items), (ex) => throw ex);
         }
 
         private async Task OpenReportsAsync()
@@ -68,7 +76,20 @@ namespace Automasipp.Desktop.Pages
             reportsPage = new ReportsPage(SelectedItem.ScenarioName,SelectedItem.PID);
             await PageManager.OpenPageAsync(reportsPage);
         }
+        private async Task DeleteSessionAsync()
+        {
+            IResult<bool> result;
 
+            if (PageManager == null) return;
+
+            result = await DeleteAsync<bool>($"Session/{SelectedItem.ScenarioName}/{SelectedItem.PID}");
+            if (!result.Succeeded())
+            {
+                ErrorMessage = "Cannot delete session";
+                return;
+            }
+            else Items.Remove(SelectedItem);
+        }
 
     }
 }

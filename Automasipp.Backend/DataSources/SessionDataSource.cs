@@ -77,15 +77,18 @@ namespace Automasipp.backend.DataSources
         
         private Process CreateProcess(string ScenarioName)
         {
-            Process process = new Process();
-            process.StartInfo.FileName = Path.Combine(sippFolder, "sipp");
 
             // -bg run in background => pid is incorrect when using this option
             // -stf define report file name 
-            process.StartInfo.Arguments = $"10.0.1.11 -s 1001 -sf {scenariosFolder}/{ScenarioName}.xml -l 1 -m 1 -mi 10.0.1.133 -trace_stat -stf report.csv";
+
+            Process process = new Process();
+
+            process.StartInfo.FileName = Path.Combine(sippFolder, "sipp");
+            process.StartInfo.WorkingDirectory = reportsFolder;
+            process.StartInfo.Arguments = $"10.0.1.11 -s 1001 -sf {scenariosFolder}/{ScenarioName}.xml -l 1 -m 1 -mi 10.0.1.133 -trace_stat";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.UseShellExecute = true;
 
             /*process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
@@ -151,6 +154,39 @@ namespace Automasipp.backend.DataSources
             if (e.Data != null) Log(LogLevel.Error, e.Data);
 
         }
+
+
+        public IResult<bool> DeleteSession(string ScenarioName, int PID)
+        {
+            string scenarioFileName, reportFileName;
+
+
+            if (ScenarioName == null) return Result.Fail<bool>(new ArgumentNullException(nameof(ScenarioName)));
+
+            scenarioFileName = Path.Combine(sessionsFolder, $"{ScenarioName}_{PID}.session");
+            reportFileName = Path.Combine(reportsFolder, $"{ScenarioName}_{PID}_.csv");
+
+            if (!System.IO.Directory.Exists(sessionsFolder)) return Result.Fail<bool>(new DirectoryNotFoundException($"Directory {sessionsFolder} was not found"));
+            if (!System.IO.Directory.Exists(reportsFolder)) return Result.Fail<bool>(new DirectoryNotFoundException($"Directory {reportsFolder} was not found"));
+            if (!System.IO.File.Exists(scenarioFileName)) return Result.Fail<bool>(new FileNotFoundException($"File {scenarioFileName} was not found"));
+
+
+            return
+                Try<bool>(() => 
+                {
+                    Log(LogLevel.Information, $"Delete session from scenario {ScenarioName}, PID {PID} in folder {sessionsFolder}");
+                    System.IO.File.Delete(scenarioFileName);return true; 
+                }
+                ).Then(Try(() => 
+                {
+                    Log(LogLevel.Information, $"Delete session reports from scenario {ScenarioName}, PID {PID} in folder {reportsFolder}");
+                    System.IO.File.Delete(reportFileName); return true; 
+                }
+                ));
+
+        }
+
+
 
     }
 }

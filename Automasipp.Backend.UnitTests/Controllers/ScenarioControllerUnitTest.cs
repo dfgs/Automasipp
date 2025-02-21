@@ -14,7 +14,7 @@ using ResultTypeLib;
 namespace Automasipp.Backend.UnitTests.Controllers
 {
     [TestClass]
-    public class ScenarioDataSourceUnitTest
+    public class ScenarioControllerUnitTest
     {
         #region GetScenarioNames
         [TestMethod]

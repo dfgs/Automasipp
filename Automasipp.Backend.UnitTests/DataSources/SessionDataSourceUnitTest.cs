@@ -264,6 +264,105 @@ namespace Automasipp.Backend.UnitTests.DataSources
         }
         #endregion
 
+        #region DeleteSession
+        [TestMethod]
+        public void DeleteSessionShouldFailAndLogErrorIfSessionsFolderIsInvalid()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", "invalidfolder", "invalidfolder", @".\Reports");
+
+            result = dataSource.DeleteSession("scenario",1234);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<DirectoryNotFoundException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+        [TestMethod]
+        public void DeleteSessionShouldFailAndLogErrorIfReportsFolderIsInvalid()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Sessions", "invalidfolder", "invalidfolder");
+
+            result = dataSource.DeleteSession("scenario", 1234);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<DirectoryNotFoundException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+
+        [TestMethod]
+        public void DeleteSessionShouldFailAndLogErrorIfScenarioNameIsInvalid()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<bool> result;
+
+
+            logger = Mock.Of<ILogger>();
+            Mock.Get(logger).Setup(m => m.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable(Times.Once());
+
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Temp", "invalidfolder", @".\Temp");
+
+            result = dataSource.DeleteSession("invalidscenario", 1234);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Succeeded());
+            result.Match((val) => Assert.Fail(), (ex) => Assert.IsInstanceOfType<FileNotFoundException>(ex));
+
+            Mock.VerifyAll();
+
+        }
+   
+
+        [TestMethod]
+        public void DeleteSessionShouldSuccess()
+        {
+            ILogger logger;
+            ISessionDataSource dataSource;
+            IResult<bool> result;
+            string sessionFileName = @".\Temp\deletescenario_1234.session";
+            string reportFileName = @".\Temp\deletescenario_1234_.csv";
+
+            logger = Mock.Of<ILogger>();
+
+            dataSource = new SessionDataSource(logger, "invalidfolder", @".\Temp", "invalidfolder", @".\Temp");
+
+            if (!File.Exists(sessionFileName)) using (var sw=File.CreateText(sessionFileName)) { sw.WriteLine("test"); } ;
+            if (!File.Exists(reportFileName)) using (var sw = File.CreateText(reportFileName)) { sw.WriteLine("test"); } ;
+
+            result = dataSource.DeleteSession("deletescenario", 1234);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Succeeded());
+            result.Match((val) => Assert.IsTrue(val), (ex) => Assert.Fail());
+
+
+        }
+
+        #endregion
 
 
     }
